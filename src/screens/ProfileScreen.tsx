@@ -1,7 +1,14 @@
 import React from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import { UserProfile } from "../../App";
 
-export default function ProfileScreen() {
+interface ProfileScreenProps {
+  userProfile: UserProfile;
+  onUpdateProfile: (updates: Partial<UserProfile>) => void;
+  onManageHabits: () => void;
+}
+
+export default function ProfileScreen({ userProfile, onUpdateProfile, onManageHabits }: ProfileScreenProps) {
   return (
     <View className="flex-1 bg-slate-900">
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
@@ -19,8 +26,8 @@ export default function ProfileScreen() {
 
           {/* User Info */}
           <View className="flex-1">
-            <Text className="text-xl font-bold text-white">Bao Suzy</Text>
-            <Text className="mt-1 text-sm text-gray-400">@basuzy2023</Text>
+            <Text className="text-xl font-bold text-white">{userProfile.name}</Text>
+            <Text className="mt-1 text-sm text-gray-400">@{userProfile.name.toLowerCase().replace(/\s+/g, '')}</Text>
             <View className="mt-2 flex-row gap-2">
               <TouchableOpacity className="rounded bg-blue-500 px-3 py-1">
                 <Text className="text-xs font-semibold text-white">Edit</Text>
@@ -31,6 +38,21 @@ export default function ProfileScreen() {
             </View>
           </View>
         </View>
+
+        {/* Manage Habits - Entry Point */}
+        <TouchableOpacity
+          className="mx-6 mb-6 flex-row items-center gap-4 rounded-lg bg-blue-600 px-4 py-4"
+          onPress={onManageHabits}
+        >
+          <View className="h-12 w-12 items-center justify-center rounded-lg bg-white/20">
+            <Text className="text-2xl">✨</Text>
+          </View>
+          <View className="flex-1">
+            <Text className="text-lg font-bold text-white">Manage Habits</Text>
+            <Text className="text-sm text-blue-200">Add or create new habits</Text>
+          </View>
+          <Text className="text-xl text-white">→</Text>
+        </TouchableOpacity>
 
         {/* Settings Section */}
         <View className="mx-6">
@@ -78,14 +100,8 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Logout Button */}
-        <View className="mx-6 mt-8 mb-6">
-          <TouchableOpacity className="rounded-lg border border-red-500 py-3">
-            <Text className="text-center font-semibold text-red-500">
-              Log Out
-            </Text>
-          </TouchableOpacity>
-        </View>
+        {/* Bottom spacing */}
+        <View className="h-6" />
       </ScrollView>
     </View>
   );

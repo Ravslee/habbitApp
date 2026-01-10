@@ -13,6 +13,7 @@ interface CreateHabitModalProps {
     visible: boolean;
     onClose: () => void;
     onCreateHabit: (habit: { name: string; icon: string }) => void;
+    isDark?: boolean;
 }
 
 const EMOJI_OPTIONS = [
@@ -25,6 +26,7 @@ export default function CreateHabitModal({
     visible,
     onClose,
     onCreateHabit,
+    isDark = true,
 }: CreateHabitModalProps) {
     const [habitName, setHabitName] = useState("");
     const [selectedIcon, setSelectedIcon] = useState("📚");
@@ -55,26 +57,29 @@ export default function CreateHabitModal({
             onRequestClose={handleClose}
         >
             <View className="flex-1 justify-end bg-black/50">
-                <View className="rounded-t-3xl bg-slate-800 px-6 pb-8 pt-6">
+                <View className={`rounded-t-3xl px-6 pb-8 pt-6 ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                     {/* Header */}
                     <View className="mb-6 flex-row items-center justify-between">
-                        <Text className="text-xl font-bold text-white">
+                        <Text className={`text-xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                             Create New Habit
                         </Text>
                         <TouchableOpacity onPress={handleClose}>
-                            <Text className="text-2xl text-gray-400">✕</Text>
+                            <Text className={`text-2xl ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>✕</Text>
                         </TouchableOpacity>
                     </View>
 
                     {/* Habit Name Input */}
                     <View className="mb-6">
-                        <Text className="mb-2 text-sm font-medium text-gray-400">
+                        <Text className={`mb-2 text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                             Habit Name
                         </Text>
                         <TextInput
-                            className="rounded-lg border border-slate-600 bg-slate-700 px-4 py-3 text-white"
+                            className={`rounded-lg border px-4 py-3 ${isDark
+                                ? 'border-slate-600 bg-slate-700 text-white'
+                                : 'border-gray-300 bg-gray-50 text-slate-900'
+                                }`}
                             placeholder="Enter habit name..."
-                            placeholderTextColor="#9ca3af"
+                            placeholderTextColor={isDark ? "#9ca3af" : "#6b7280"}
                             value={habitName}
                             onChangeText={setHabitName}
                         />
@@ -82,7 +87,7 @@ export default function CreateHabitModal({
 
                     {/* Icon Selection */}
                     <View className="mb-6">
-                        <Text className="mb-3 text-sm font-medium text-gray-400">
+                        <Text className={`mb-3 text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                             Choose Icon
                         </Text>
                         <ScrollView
@@ -96,8 +101,8 @@ export default function CreateHabitModal({
                                         key={index}
                                         onPress={() => setSelectedIcon(emoji)}
                                         className={`h-12 w-12 items-center justify-center rounded-lg ${selectedIcon === emoji
-                                                ? "bg-blue-500"
-                                                : "bg-slate-700"
+                                            ? "bg-blue-500"
+                                            : isDark ? "bg-slate-700" : "bg-gray-100"
                                             }`}
                                     >
                                         <Text className="text-2xl">{emoji}</Text>
@@ -108,13 +113,13 @@ export default function CreateHabitModal({
                     </View>
 
                     {/* Preview */}
-                    <View className="mb-6 rounded-lg bg-slate-700 p-4">
-                        <Text className="mb-2 text-xs text-gray-400">Preview</Text>
+                    <View className={`mb-6 rounded-lg p-4 ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}>
+                        <Text className={`mb-2 text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Preview</Text>
                         <View className="flex-row items-center gap-3">
-                            <View className="h-12 w-12 items-center justify-center rounded-lg bg-slate-600">
+                            <View className={`h-12 w-12 items-center justify-center rounded-lg ${isDark ? 'bg-slate-600' : 'bg-white'}`}>
                                 <Text className="text-2xl">{selectedIcon}</Text>
                             </View>
-                            <Text className="text-base font-medium text-white">
+                            <Text className={`text-base font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>
                                 {habitName || "Your habit name"}
                             </Text>
                         </View>
@@ -124,11 +129,15 @@ export default function CreateHabitModal({
                     <TouchableOpacity
                         onPress={handleCreate}
                         disabled={!habitName.trim()}
-                        className={`rounded-lg py-4 ${habitName.trim() ? "bg-blue-500" : "bg-slate-600"
+                        className={`rounded-lg py-4 ${habitName.trim()
+                            ? "bg-blue-500"
+                            : isDark ? "bg-slate-600" : "bg-gray-300"
                             }`}
                     >
                         <Text
-                            className={`text-center text-base font-semibold ${habitName.trim() ? "text-white" : "text-gray-400"
+                            className={`text-center text-base font-semibold ${habitName.trim()
+                                ? "text-white"
+                                : isDark ? "text-gray-400" : "text-gray-500"
                                 }`}
                         >
                             Create Habit

@@ -1,5 +1,5 @@
 import "./global.css"
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { View } from "react-native";
 import SplashScreen from "./src/screens/SplashScreen";
 import OnboardingScreen from "./src/screens/OnboardingScreen";
@@ -10,6 +10,9 @@ import ProfileScreen from "./src/screens/ProfileScreen";
 import ManageHabitsScreen from "./src/screens/ManageHabitsScreen";
 import HabitSettingsScreen from "./src/screens/HabitSettingsScreen";
 import BottomTabNavigation from "./src/components/BottomTabNavigation";
+import ErrorBoundary from "./src/components/ErrorBoundary";
+import { loadAppData, saveAppData, AppData } from "./src/utils/storage";
+import { ThemeMode } from "./src/context/ThemeContext";
 
 type Tab = "home" | "statistics" | "journey" | "profile";
 
@@ -25,7 +28,6 @@ export interface Habit {
   name: string;
   icon: string;
   completed: boolean;
-  highlight?: boolean;
   notification?: NotificationSettings;
 }
 
@@ -34,14 +36,85 @@ export interface UserProfile {
   dob: string;
 }
 
+// Habit history: date string (YYYY-MM-DD) -> array of completed habit IDs
+export interface HabitHistory {
+  [date: string]: number[];
+}
+
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>("home");
   const [habits, setHabits] = useState<Habit[]>([]);
+  const [habitHistory, setHabitHistory] = useState<HabitHistory>({});
+  const [theme] = useState<ThemeMode>('light'); // Fixed to light theme
   const [showManageHabits, setShowManageHabits] = useState(false);
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
 
+  // Ref to track if we should save (to debounce saves)
+  const saveTimeoutRef = useRef<number | null>(null);
+
+  // Debug: render counter to detect infinite loops
+  const renderCount = useRef(0);
+  renderCount.current += 1;
+  console.log('App render #', renderCount.current, 'theme:', theme);
+
+  // Fixed to light theme - no dynamic theme switching
+  const isDark = false;
+
+  // Load data on app start
+  useEffect(() => {
+    const initializeApp = async () => {
+      try {
+        const data = await loadAppData();
+        setUserProfile(data.userProfile);
+        setHabits(data.habits);
+        setHabitHistory(data.habitHistory);
+        // Theme is now fixed to light - ignore saved theme
+      } catch (error) {
+        console.error('Error loading app data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    initializeApp();
+  }, []);
+
+  // Debounced save function
+  const debouncedSave = useCallback((data: AppData) => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    saveTimeoutRef.current = setTimeout(() => {
+      saveAppData(data).catch(err => console.error('Save error:', err));
+    }, 500);
+  }, []);
+
+  // Save data whenever it changes (debounced)
+  useEffect(() => {
+    if (!isLoading) {
+      const data: AppData = {
+        userProfile,
+        habits,
+        habitHistory,
+        theme,
+        version: 1,
+      };
+      debouncedSave(data);
+    }
+  }, [userProfile, habits, habitHistory, theme, isLoading, debouncedSave]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Show splash for 3 seconds
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSplash(false);
@@ -50,19 +123,44 @@ export default function App() {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleOnboardingComplete = (profile: UserProfile) => {
+  const handleOnboardingComplete = useCallback((profile: UserProfile) => {
     setUserProfile(profile);
-  };
+  }, []);
 
-  const toggleHabit = (id: number) => {
-    setHabits((prev) =>
-      prev.map((h) =>
+  // Theme change handler removed - light theme is now permanent
+
+  const toggleHabit = useCallback((id: number) => {
+    const today = new Date().toISOString().split('T')[0];
+
+    setHabits((prev) => {
+      const habit = prev.find(h => h.id === id);
+      const wasCompleted = habit?.completed;
+
+      setHabitHistory((prevHistory) => {
+        const todayHistory = prevHistory[today] || [];
+        if (wasCompleted) {
+          return {
+            ...prevHistory,
+            [today]: todayHistory.filter(hId => hId !== id)
+          };
+        } else {
+          if (!todayHistory.includes(id)) {
+            return {
+              ...prevHistory,
+              [today]: [...todayHistory, id]
+            };
+          }
+          return prevHistory;
+        }
+      });
+
+      return prev.map((h) =>
         h.id === id ? { ...h, completed: !h.completed } : h
-      )
-    );
-  };
+      );
+    });
+  }, []);
 
-  const addHabit = (habit: { name: string; icon: string }) => {
+  const addHabit = useCallback((habit: { name: string; icon: string }) => {
     const newHabit: Habit = {
       id: Date.now(),
       name: habit.name,
@@ -70,22 +168,44 @@ export default function App() {
       completed: false,
     };
     setHabits((prev) => [...prev, newHabit]);
-  };
+  }, []);
 
-  const updateProfile = (updates: Partial<UserProfile>) => {
-    if (userProfile) {
-      setUserProfile({ ...userProfile, ...updates });
-    }
-  };
+  const updateProfile = useCallback((updates: Partial<UserProfile>) => {
+    setUserProfile(prev => prev ? { ...prev, ...updates } : null);
+  }, []);
 
-  const updateHabitNotification = (habitId: number, notification: NotificationSettings) => {
+  const updateHabitNotification = useCallback((habitId: number, notification: NotificationSettings) => {
     setHabits((prev) =>
       prev.map((h) =>
         h.id === habitId ? { ...h, notification } : h
       )
     );
     setEditingHabit(null);
-  };
+  }, []);
+
+  const handleManageHabits = useCallback(() => {
+    setShowManageHabits(true);
+  }, []);
+
+  const handleBackFromManageHabits = useCallback(() => {
+    setShowManageHabits(false);
+  }, []);
+
+  const handleEditHabit = useCallback((habit: Habit) => {
+    setEditingHabit(habit);
+  }, []);
+
+  const handleBackFromHabitSettings = useCallback(() => {
+    setEditingHabit(null);
+  }, []);
+
+  const handleDeleteHabit = useCallback((id: number) => {
+    setHabits(prev => prev.filter(h => h.id !== id));
+  }, []);
+
+  const handleTabChange = useCallback((tab: Tab) => {
+    setActiveTab(tab);
+  }, []);
 
   // Show splash screen first
   if (showSplash) {
@@ -103,7 +223,8 @@ export default function App() {
       <HabitSettingsScreen
         habit={editingHabit}
         onSave={(settings) => updateHabitNotification(editingHabit.id, settings)}
-        onBack={() => setEditingHabit(null)}
+        onBack={handleBackFromHabitSettings}
+        isDark={isDark}
       />
     );
   }
@@ -114,42 +235,42 @@ export default function App() {
       <ManageHabitsScreen
         habits={habits}
         onAddHabit={addHabit}
-        onDeleteHabit={(id) => setHabits(prev => prev.filter(h => h.id !== id))}
-        onEditHabit={(habit) => setEditingHabit(habit)}
-        onBack={() => setShowManageHabits(false)}
+        onDeleteHabit={handleDeleteHabit}
+        onEditHabit={handleEditHabit}
+        onBack={handleBackFromManageHabits}
+        isDark={isDark}
       />
     );
   }
 
-  const renderScreen = () => {
-    switch (activeTab) {
-      case "statistics":
-        return <StatisticsScreen />;
-      case "journey":
-        return <JourneyScreen />;
-      case "profile":
-        return (
+  return (
+    <ErrorBoundary>
+      <View className={`flex-1 ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}>
+        {activeTab === "statistics" && (
+          <StatisticsScreen habits={habits} habitHistory={habitHistory} theme={theme} isDark={isDark} />
+        )}
+        {activeTab === "journey" && (
+          <JourneyScreen habits={habits} habitHistory={habitHistory} theme={theme} isDark={isDark} />
+        )}
+        {activeTab === "profile" && (
           <ProfileScreen
             userProfile={userProfile}
             onUpdateProfile={updateProfile}
-            onManageHabits={() => setShowManageHabits(true)}
+            onManageHabits={handleManageHabits}
+            isDark={isDark}
           />
-        );
-      default:
-        return (
+        )}
+        {activeTab === "home" && (
           <HomeScreen
             habits={habits}
             onToggleHabit={toggleHabit}
             userName={userProfile.name}
+            theme={theme}
+            isDark={isDark}
           />
-        );
-    }
-  };
-
-  return (
-    <View className="flex-1">
-      {renderScreen()}
-      <BottomTabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
-    </View>
+        )}
+        <BottomTabNavigation activeTab={activeTab} onTabChange={handleTabChange} isDark={isDark} />
+      </View>
+    </ErrorBoundary>
   );
 }

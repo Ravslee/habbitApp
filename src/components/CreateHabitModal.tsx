@@ -60,7 +60,7 @@ export default function CreateHabitModal({
                 <View className={`rounded-t-3xl px-6 pb-8 pt-6 ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
                     {/* Header */}
                     <View className="mb-6 flex-row items-center justify-between">
-                        <Text className={`text-xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                        <Text className={`text-xl font-bold ${isDark ? 'text-white' : 'text-slate-700'}`}>
                             Create New Habit
                         </Text>
                         <TouchableOpacity onPress={handleClose}>
@@ -70,13 +70,13 @@ export default function CreateHabitModal({
 
                     {/* Habit Name Input */}
                     <View className="mb-6">
-                        <Text className={`mb-2 text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                        <Text className={`mb-2 text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                             Habit Name
                         </Text>
                         <TextInput
                             className={`rounded-lg border px-4 py-3 ${isDark
                                 ? 'border-slate-600 bg-slate-700 text-white'
-                                : 'border-gray-300 bg-gray-50 text-slate-900'
+                                : 'border-gray-300 bg-gray-50 text-slate-700'
                                 }`}
                             placeholder="Enter habit name..."
                             placeholderTextColor={isDark ? "#9ca3af" : "#6b7280"}
@@ -87,7 +87,7 @@ export default function CreateHabitModal({
 
                     {/* Icon Selection */}
                     <View className="mb-6">
-                        <Text className={`mb-3 text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                        <Text className={`mb-3 text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                             Choose Icon
                         </Text>
                         <ScrollView
@@ -101,7 +101,7 @@ export default function CreateHabitModal({
                                         key={index}
                                         onPress={() => setSelectedIcon(emoji)}
                                         className={`h-12 w-12 items-center justify-center rounded-lg ${selectedIcon === emoji
-                                            ? "bg-blue-500"
+                                            ? "bg-purple-500"
                                             : isDark ? "bg-slate-700" : "bg-gray-100"
                                             }`}
                                     >
@@ -119,7 +119,7 @@ export default function CreateHabitModal({
                             <View className={`h-12 w-12 items-center justify-center rounded-lg ${isDark ? 'bg-slate-600' : 'bg-white'}`}>
                                 <Text className="text-2xl">{selectedIcon}</Text>
                             </View>
-                            <Text className={`text-base font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                            <Text className={`text-base font-medium ${isDark ? 'text-white' : 'text-slate-700'}`}>
                                 {habitName || "Your habit name"}
                             </Text>
                         </View>
@@ -130,7 +130,7 @@ export default function CreateHabitModal({
                         onPress={handleCreate}
                         disabled={!habitName.trim()}
                         className={`rounded-lg py-4 ${habitName.trim()
-                            ? "bg-blue-500"
+                            ? "bg-purple-500"
                             : isDark ? "bg-slate-600" : "bg-gray-300"
                             }`}
                     >

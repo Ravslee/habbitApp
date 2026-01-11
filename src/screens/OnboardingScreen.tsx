@@ -42,8 +42,8 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                 {/* Progress Indicator */}
                 <View className="px-6 pt-12">
                     <View className="flex-row gap-2">
-                        <View className={`h-1 flex-1 rounded-full ${step >= 1 ? 'bg-blue-500' : 'bg-slate-700'}`} />
-                        <View className={`h-1 flex-1 rounded-full ${step >= 2 ? 'bg-blue-500' : 'bg-slate-700'}`} />
+                        <View className={`h-1 flex-1 rounded-full ${step >= 1 ? 'bg-purple-500' : 'bg-slate-700'}`} />
+                        <View className={`h-1 flex-1 rounded-full ${step >= 2 ? 'bg-purple-500' : 'bg-slate-700'}`} />
                     </View>
                 </View>
 
@@ -123,14 +123,14 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                             onPress={() => setStep(1)}
                             className="mb-3"
                         >
-                            <Text className="text-center text-blue-400">← Go back</Text>
+                            <Text className="text-center text-purple-400">← Go back</Text>
                         </TouchableOpacity>
                     )}
 
                     <TouchableOpacity
                         onPress={handleContinue}
                         disabled={!canContinue}
-                        className={`rounded-xl py-4 ${canContinue ? 'bg-blue-500' : 'bg-slate-700'
+                        className={`rounded-xl py-4 ${canContinue ? 'bg-purple-500' : 'bg-slate-700'
                             }`}
                     >
                         <Text

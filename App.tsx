@@ -9,10 +9,12 @@ import JourneyScreen from "./src/screens/JourneyScreen";
 import ProfileScreen from "./src/screens/ProfileScreen";
 import ManageHabitsScreen from "./src/screens/ManageHabitsScreen";
 import HabitSettingsScreen from "./src/screens/HabitSettingsScreen";
+import ProfileEditScreen from "./src/screens/ProfileEditScreen";
 import BottomTabNavigation from "./src/components/BottomTabNavigation";
 import ErrorBoundary from "./src/components/ErrorBoundary";
 import { loadAppData, saveAppData, AppData } from "./src/utils/storage";
 import { ThemeMode } from "./src/context/ThemeContext";
+import { initializeNotifications, scheduleHabitNotification, cancelHabitNotification } from "./src/services/notificationService";
 
 type Tab = "home" | "statistics" | "journey" | "profile";
 
@@ -48,9 +50,10 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>("home");
   const [habits, setHabits] = useState<Habit[]>([]);
   const [habitHistory, setHabitHistory] = useState<HabitHistory>({});
-  const [theme] = useState<ThemeMode>('light'); // Fixed to light theme
+  const [theme, setTheme] = useState<ThemeMode>('light');
   const [showManageHabits, setShowManageHabits] = useState(false);
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
+  const [editingProfile, setEditingProfile] = useState(false);
 
   // Ref to track if we should save (to debounce saves)
   const saveTimeoutRef = useRef<number | null>(null);
@@ -60,13 +63,16 @@ export default function App() {
   renderCount.current += 1;
   console.log('App render #', renderCount.current, 'theme:', theme);
 
-  // Fixed to light theme - no dynamic theme switching
-  const isDark = false;
+  // Calculate isDark based on theme
+  const isDark = theme === 'dark';
 
   // Load data on app start
   useEffect(() => {
     const initializeApp = async () => {
       try {
+        // Initialize notification system
+        await initializeNotifications();
+
         const data = await loadAppData();
         setUserProfile(data.userProfile);
         setHabits(data.habits);
@@ -174,14 +180,26 @@ export default function App() {
     setUserProfile(prev => prev ? { ...prev, ...updates } : null);
   }, []);
 
-  const updateHabitNotification = useCallback((habitId: number, notification: NotificationSettings) => {
+  const updateHabitNotification = useCallback(async (habitId: number, notification: NotificationSettings) => {
+    // Find the habit to get its details
+    const habit = habits.find(h => h.id === habitId);
+
+    if (habit) {
+      // Schedule or cancel notification based on settings
+      if (notification.enabled) {
+        await scheduleHabitNotification({ ...habit, notification }, notification);
+      } else {
+        await cancelHabitNotification(habitId);
+      }
+    }
+
     setHabits((prev) =>
       prev.map((h) =>
         h.id === habitId ? { ...h, notification } : h
       )
     );
     setEditingHabit(null);
-  }, []);
+  }, [habits]);
 
   const handleManageHabits = useCallback(() => {
     setShowManageHabits(true);
@@ -207,6 +225,14 @@ export default function App() {
     setActiveTab(tab);
   }, []);
 
+  const handleEditProfile = useCallback(() => {
+    setEditingProfile(true);
+  }, []);
+
+  const handleBackFromEditProfile = useCallback(() => {
+    setEditingProfile(false);
+  }, []);
+
   // Show splash screen first
   if (showSplash) {
     return <SplashScreen />;
@@ -224,6 +250,18 @@ export default function App() {
         habit={editingHabit}
         onSave={(settings) => updateHabitNotification(editingHabit.id, settings)}
         onBack={handleBackFromHabitSettings}
+        isDark={isDark}
+      />
+    );
+  }
+
+  // Show ProfileEdit screen
+  if (editingProfile) {
+    return (
+      <ProfileEditScreen
+        userProfile={userProfile}
+        onSave={updateProfile}
+        onBack={handleBackFromEditProfile}
         isDark={isDark}
       />
     );
@@ -257,12 +295,16 @@ export default function App() {
             userProfile={userProfile}
             onUpdateProfile={updateProfile}
             onManageHabits={handleManageHabits}
+            onEditProfile={handleEditProfile}
+            theme={theme}
+            onToggleTheme={() => setTheme(theme === 'light' ? 'dark' : 'light')}
             isDark={isDark}
           />
         )}
         {activeTab === "home" && (
           <HomeScreen
             habits={habits}
+            habitHistory={habitHistory}
             onToggleHabit={toggleHabit}
             userName={userProfile.name}
             theme={theme}

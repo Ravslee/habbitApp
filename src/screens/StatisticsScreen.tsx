@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { Habit, HabitHistory } from "../../App";
 import StatCard from "../components/StatCard";
 import BarChart from "../components/BarChart";
+import AdBanner from "../components/AdBanner";
 import { ThemeMode } from "../context/ThemeContext";
 
 interface StatisticsScreenProps {
@@ -136,8 +137,8 @@ export default function StatisticsScreen({ habits, habitHistory, theme, isDark }
   const getCompletionColor = (completions: number) => {
     if (completions === 0) return isDark ? "border border-slate-700" : "border border-gray-300";
     if (completions >= habits.length && habits.length > 0) return "bg-emerald-500";
-    if (completions >= habits.length / 2) return "bg-blue-500";
-    return "bg-blue-400/60";
+    if (completions >= habits.length / 2) return "bg-purple-500";
+    return "bg-purple-400/60";
   };
 
   return (
@@ -145,8 +146,8 @@ export default function StatisticsScreen({ habits, habitHistory, theme, isDark }
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
         {/* Header */}
         <View className="px-6 pt-6 pb-4">
-          <Text className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Statistics</Text>
-          <Text className={`text-sm mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Track your habit progress</Text>
+          <Text className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-700'}`}>Statistics</Text>
+          <Text className={`text-sm mt-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Track your habit progress</Text>
         </View>
 
         {/* Habit Filter */}
@@ -159,7 +160,7 @@ export default function StatisticsScreen({ habits, habitHistory, theme, isDark }
             <TouchableOpacity
               onPress={() => setSelectedHabitId(null)}
               className={`px-4 py-2 rounded-full mr-2 ${selectedHabitId === null
-                ? 'bg-blue-500'
+                ? 'bg-purple-500'
                 : isDark ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-gray-200'
                 }`}
             >
@@ -173,7 +174,7 @@ export default function StatisticsScreen({ habits, habitHistory, theme, isDark }
                 key={habit.id}
                 onPress={() => setSelectedHabitId(habit.id)}
                 className={`px-4 py-2 rounded-full mr-2 flex-row items-center ${selectedHabitId === habit.id
-                  ? 'bg-blue-500'
+                  ? 'bg-purple-500'
                   : isDark ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-gray-200'
                   }`}
               >
@@ -220,14 +221,14 @@ export default function StatisticsScreen({ habits, habitHistory, theme, isDark }
               onPress={goToPrevMonth}
               className={`w-10 h-10 items-center justify-center rounded-full ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}
             >
-              <Text className={`text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>←</Text>
+              <Text className={`text-lg ${isDark ? 'text-white' : 'text-slate-700'}`}>←</Text>
             </TouchableOpacity>
-            <Text className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{monthName}</Text>
+            <Text className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-700'}`}>{monthName}</Text>
             <TouchableOpacity
               onPress={goToNextMonth}
               className={`w-10 h-10 items-center justify-center rounded-full ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}
             >
-              <Text className={`text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>→</Text>
+              <Text className={`text-lg ${isDark ? 'text-white' : 'text-slate-700'}`}>→</Text>
             </TouchableOpacity>
           </View>
 
@@ -256,7 +257,7 @@ export default function StatisticsScreen({ habits, habitHistory, theme, isDark }
                 className={`w-10 h-10 m-0.5 items-center justify-center rounded-lg ${getCompletionColor(completions)
                   } ${isToday ? 'ring-2 ring-blue-500' : ''}`}
               >
-                <Text className={`text-xs font-semibold ${completions > 0 ? 'text-white' : isDark ? 'text-gray-400' : 'text-gray-600'
+                <Text className={`text-xs font-semibold ${completions > 0 ? 'text-white' : isDark ? 'text-gray-400' : 'text-gray-500'
                   }`}>
                   {day}
                 </Text>
@@ -267,31 +268,36 @@ export default function StatisticsScreen({ habits, habitHistory, theme, isDark }
           {/* Legend */}
           <View className={`flex-row items-center justify-center mt-4 pt-3 border-t ${isDark ? 'border-slate-700' : 'border-gray-200'}`}>
             <View className="flex-row items-center mr-4">
-              <View className="w-3 h-3 rounded bg-blue-400/60 mr-1" />
-              <Text className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Some</Text>
+              <View className="w-3 h-3 rounded bg-purple-400/60 mr-1" />
+              <Text className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Some</Text>
             </View>
             <View className="flex-row items-center mr-4">
-              <View className="w-3 h-3 rounded bg-blue-500 mr-1" />
-              <Text className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Half</Text>
+              <View className="w-3 h-3 rounded bg-purple-500 mr-1" />
+              <Text className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Half</Text>
             </View>
             <View className="flex-row items-center">
               <View className="w-3 h-3 rounded bg-emerald-500 mr-1" />
-              <Text className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>All</Text>
+              <Text className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>All</Text>
             </View>
           </View>
         </View>
 
         {/* Weekly Statistics */}
-        <View className={`mx-4 mb-6 rounded-2xl p-4 border ${isDark ? 'bg-blue-900/50 border-blue-700/30' : 'bg-blue-50 border-blue-200'}`}>
+        <View className={`mx-4 mb-6 rounded-2xl p-4 border ${isDark ? 'bg-purple-900/50 border-purple-700/30' : 'bg-purple-50 border-purple-200'}`}>
           <View className="flex-row items-center justify-between mb-4">
-            <Text className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Weekly Overview</Text>
-            <View className={`rounded-full px-3 py-1 ${isDark ? 'bg-blue-500/30' : 'bg-blue-100'}`}>
-              <Text className={`text-xs font-semibold ${isDark ? 'text-blue-300' : 'text-blue-600'}`}>Last 7 days</Text>
+            <Text className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-700'}`}>Weekly Overview</Text>
+            <View className={`rounded-full px-3 py-1 ${isDark ? 'bg-purple-500/30' : 'bg-purple-100'}`}>
+              <Text className={`text-xs font-semibold ${isDark ? 'text-purple-300' : 'text-purple-600'}`}>Last 7 days</Text>
             </View>
           </View>
           <View className="h-32">
-            <BarChart data={weeklyData} completedToday={0} totalToday={habits.length} isDark={isDark} />
+            <BarChart habits={habits} habitHistory={habitHistory} isDark={isDark} />
           </View>
+        </View>
+
+        {/* Ad Banner */}
+        <View className="mx-4 mb-6 rounded-xl overflow-hidden">
+          <AdBanner isDark={isDark} />
         </View>
 
         {/* Bottom Spacing for Tab Navigation */}

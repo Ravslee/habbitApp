@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { View, Text, ScrollView } from "react-native";
 import { Habit, HabitHistory } from "../../App";
 import AchievementBadge from "../components/AchievementBadge";
+import AdBanner from "../components/AdBanner";
 import { ThemeMode } from "../context/ThemeContext";
 
 interface JourneyScreenProps {
@@ -173,8 +174,8 @@ export default function JourneyScreen({ habits, habitHistory, theme, isDark }: J
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
         {/* Header */}
         <View className="px-6 pt-6 pb-4">
-          <Text className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Your Journey</Text>
-          <Text className={`text-sm mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Track your achievements</Text>
+          <Text className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-700'}`}>Your Journey</Text>
+          <Text className={`text-sm mt-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Track your achievements</Text>
         </View>
 
         {/* Journey Stats */}
@@ -222,7 +223,7 @@ export default function JourneyScreen({ habits, habitHistory, theme, isDark }: J
 
         {/* Achievements Section */}
         <View className="px-4 mb-4">
-          <Text className={`text-lg font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+          <Text className={`text-lg font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-700'}`}>
             Achievements ({unlockedCount}/{ACHIEVEMENTS.length})
           </Text>
 
@@ -250,6 +251,11 @@ export default function JourneyScreen({ habits, habitHistory, theme, isDark }: J
               isDark={isDark}
             />
           ))}
+        </View>
+
+        {/* Ad Banner */}
+        <View className="mx-4 mb-6 rounded-xl overflow-hidden">
+          <AdBanner isDark={isDark} />
         </View>
 
         {/* Bottom Spacing for Tab Navigation */}

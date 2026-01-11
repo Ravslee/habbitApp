@@ -7,7 +7,11 @@ import {
     ScrollView,
     KeyboardAvoidingView,
     Platform,
+    Image,
+    Alert,
+    PermissionsAndroid,
 } from "react-native";
+import { launchImageLibrary, launchCamera, ImagePickerResponse } from "react-native-image-picker";
 import { UserProfile } from "../../App";
 
 interface ProfileEditScreenProps {
@@ -25,19 +29,112 @@ export default function ProfileEditScreen({
 }: ProfileEditScreenProps) {
     const [name, setName] = useState(userProfile.name);
     const [dob, setDob] = useState(userProfile.dob);
+    const [profileImage, setProfileImage] = useState<string | undefined>(userProfile.profileImage);
 
     const isValidDate = (dateString: string) => {
         const regex = /^\d{2}\/\d{2}\/\d{4}$/;
         return regex.test(dateString);
     };
 
-    const hasChanges = name !== userProfile.name || dob !== userProfile.dob;
+    const hasChanges = name !== userProfile.name || dob !== userProfile.dob || profileImage !== userProfile.profileImage;
     const isValid = name.trim().length > 0 && isValidDate(dob);
     const canSave = hasChanges && isValid;
 
+    const handleImageResponse = (response: ImagePickerResponse) => {
+        if (response.didCancel) return;
+        if (response.errorCode) {
+            Alert.alert('Error', response.errorMessage || 'Failed to pick image');
+            return;
+        }
+        if (response.assets && response.assets[0]?.uri) {
+            setProfileImage(response.assets[0].uri);
+        }
+    };
+
+    const requestCameraPermission = async (): Promise<boolean> => {
+        if (Platform.OS !== 'android') return true;
+
+        try {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.CAMERA,
+                {
+                    title: 'Camera Permission',
+                    message: 'This app needs access to your camera to take profile photos.',
+                    buttonNeutral: 'Ask Me Later',
+                    buttonNegative: 'Cancel',
+                    buttonPositive: 'OK',
+                }
+            );
+            return granted === PermissionsAndroid.RESULTS.GRANTED;
+        } catch (err) {
+            console.warn(err);
+            return false;
+        }
+    };
+
+    const requestGalleryPermission = async (): Promise<boolean> => {
+        if (Platform.OS !== 'android') return true;
+
+        try {
+            // Android 13+ uses READ_MEDIA_IMAGES, older versions use READ_EXTERNAL_STORAGE
+            const permission = Platform.Version >= 33
+                ? PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES
+                : PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE;
+
+            const granted = await PermissionsAndroid.request(permission, {
+                title: 'Gallery Permission',
+                message: 'This app needs access to your photos to select a profile picture.',
+                buttonNeutral: 'Ask Me Later',
+                buttonNegative: 'Cancel',
+                buttonPositive: 'OK',
+            });
+            return granted === PermissionsAndroid.RESULTS.GRANTED;
+        } catch (err) {
+            console.warn(err);
+            return false;
+        }
+    };
+
+    const handleTakePhoto = async () => {
+        const hasPermission = await requestCameraPermission();
+        if (!hasPermission) {
+            Alert.alert('Permission Denied', 'Camera permission is required to take photos.');
+            return;
+        }
+        launchCamera(
+            { mediaType: 'photo', quality: 0.8, maxWidth: 500, maxHeight: 500 },
+            handleImageResponse
+        );
+    };
+
+    const handleChooseFromGallery = async () => {
+        const hasPermission = await requestGalleryPermission();
+        if (!hasPermission) {
+            Alert.alert('Permission Denied', 'Gallery permission is required to select photos.');
+            return;
+        }
+        launchImageLibrary(
+            { mediaType: 'photo', quality: 0.8, maxWidth: 500, maxHeight: 500 },
+            handleImageResponse
+        );
+    };
+
+    const handleChangePhoto = () => {
+        Alert.alert(
+            'Change Photo',
+            'Choose an option',
+            [
+                { text: 'Take Photo', onPress: handleTakePhoto },
+                { text: 'Choose from Gallery', onPress: handleChooseFromGallery },
+                { text: 'Cancel', style: 'cancel' },
+            ],
+            { cancelable: true }
+        );
+    };
+
     const handleSave = () => {
         if (canSave) {
-            onSave({ name: name.trim(), dob });
+            onSave({ name: name.trim(), dob, profileImage });
             onBack();
         }
     };
@@ -68,10 +165,18 @@ export default function ProfileEditScreen({
 
                     {/* Avatar Section */}
                     <View className="items-center py-6">
-                        <View className="h-24 w-24 items-center justify-center rounded-full border-3 border-purple-400 bg-purple-500/20">
-                            <Text className="text-4xl">👤</Text>
+                        <View className="h-24 w-24 items-center justify-center rounded-full border-3 border-purple-400 bg-purple-500/20 overflow-hidden">
+                            {profileImage ? (
+                                <Image
+                                    source={{ uri: profileImage }}
+                                    className="h-full w-full"
+                                    resizeMode="cover"
+                                />
+                            ) : (
+                                <Text className="text-4xl">👤</Text>
+                            )}
                         </View>
-                        <TouchableOpacity className="mt-3">
+                        <TouchableOpacity className="mt-3" onPress={handleChangePhoto}>
                             <Text className="text-purple-500 font-semibold">Change Photo</Text>
                         </TouchableOpacity>
                     </View>

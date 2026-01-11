@@ -36,6 +36,7 @@ export interface Habit {
 export interface UserProfile {
   name: string;
   dob: string;
+  profileImage?: string;
 }
 
 // Habit history: date string (YYYY-MM-DD) -> array of completed habit IDs

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, ScrollView, TouchableOpacity, Switch, Linking, Platform } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Switch, Linking, Platform, Image } from "react-native";
 import { UserProfile } from "../../App";
 import { ThemeMode } from "../context/ThemeContext";
 import AdBanner from "../components/AdBanner";
@@ -48,10 +48,18 @@ export default function ProfileScreen({
         >
           {/* Avatar */}
           <View
-            className="h-20 w-20 items-center justify-center rounded-full border-2 border-purple-400 bg-purple-500/20"
+            className="h-20 w-20 items-center justify-center rounded-full border-2 border-purple-400 bg-purple-500/20 overflow-hidden"
             style={{ marginRight: 16 }}
           >
-            <Text className="text-3xl">👤</Text>
+            {userProfile.profileImage ? (
+              <Image
+                source={{ uri: userProfile.profileImage }}
+                className="h-full w-full"
+                resizeMode="cover"
+              />
+            ) : (
+              <Text className="text-3xl">👤</Text>
+            )}
           </View>
 
           {/* User Info */}

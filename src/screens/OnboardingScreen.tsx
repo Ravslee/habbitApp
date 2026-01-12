@@ -53,7 +53,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                         <>
                             {/* Step 1: Name */}
                             <Text className="text-3xl font-bold text-white">
-                                Welcome to{"\n"}Habbit! 👋
+                                Welcome to{"\n"}Habik! 👋
                             </Text>
                             <Text className="mt-4 text-base text-gray-400">
                                 Let's start by getting to know you better.

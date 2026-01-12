@@ -9,6 +9,7 @@ interface ProfileScreenProps {
   onUpdateProfile: (updates: Partial<UserProfile>) => void;
   onManageHabits: () => void;
   onEditProfile: () => void;
+  onShowTerms: () => void;
   theme: ThemeMode;
   onToggleTheme: () => void;
   isDark: boolean;
@@ -19,6 +20,7 @@ export default function ProfileScreen({
   onUpdateProfile,
   onManageHabits,
   onEditProfile,
+  onShowTerms,
   theme,
   onToggleTheme,
   isDark,
@@ -43,40 +45,38 @@ export default function ProfileScreen({
 
         {/* Profile Card */}
         <View
-          className={`mx-6 mb-6 flex-row items-center rounded-lg ${isDark ? 'bg-slate-800/50' : 'bg-white'} px-4 py-6`}
+          className={`mx-6 mb-6 rounded-lg ${isDark ? 'bg-slate-800/50' : 'bg-white'} px-4 py-6`}
           style={{ elevation: isDark ? 0 : 2 }}
         >
-          {/* Avatar */}
-          <View
-            className="h-20 w-20 items-center justify-center rounded-full border-2 border-purple-400 bg-purple-500/20 overflow-hidden"
-            style={{ marginRight: 16 }}
+          {/* Edit Icon - Top Right */}
+          <TouchableOpacity
+            className={`absolute right-3 top-3 h-8 w-8 items-center justify-center rounded-full ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}
+            onPress={onEditProfile}
           >
-            {userProfile.profileImage ? (
-              <Image
-                source={{ uri: userProfile.profileImage }}
-                className="h-full w-full"
-                resizeMode="cover"
-              />
-            ) : (
-              <Text className="text-3xl">👤</Text>
-            )}
-          </View>
+            <Text className="text-base">✏️</Text>
+          </TouchableOpacity>
 
-          {/* User Info */}
-          <View className="flex-1">
-            <Text className={`text-xl font-bold ${isDark ? 'text-white' : 'text-slate-700'}`}>{userProfile.name}</Text>
-            <Text className={`mt-1 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>@{userProfile.name.toLowerCase().replace(/\s+/g, '')}</Text>
-            <View className="mt-2 flex-row">
-              <TouchableOpacity
-                className="rounded bg-purple-500 px-3 py-1"
-                onPress={onEditProfile}
-                style={{ marginRight: 8 }}
-              >
-                <Text className="text-xs font-semibold text-white">Edit</Text>
-              </TouchableOpacity>
-              <TouchableOpacity className={`rounded border ${isDark ? 'border-gray-500' : 'border-gray-300'} px-3 py-1`}>
-                <Text className={`text-xs font-semibold ${isDark ? 'text-gray-300' : 'text-gray-500'}`}>Share</Text>
-              </TouchableOpacity>
+          <View className="flex-row items-center">
+            {/* Avatar */}
+            <View
+              className="h-20 w-20 items-center justify-center rounded-full border-2 border-purple-400 bg-purple-500/20 overflow-hidden"
+              style={{ marginRight: 16 }}
+            >
+              {userProfile.profileImage ? (
+                <Image
+                  source={{ uri: userProfile.profileImage }}
+                  className="h-full w-full"
+                  resizeMode="cover"
+                />
+              ) : (
+                <Text className="text-3xl">👤</Text>
+              )}
+            </View>
+
+            {/* User Info */}
+            <View className="flex-1">
+              <Text className={`text-xl font-bold ${isDark ? 'text-white' : 'text-slate-700'}`}>{userProfile.name}</Text>
+              <Text className={`mt-1 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>@{userProfile.name.toLowerCase().replace(/\s+/g, '')}</Text>
             </View>
           </View>
         </View>
@@ -157,7 +157,7 @@ export default function ProfileScreen({
           </TouchableOpacity>
 
           {/* Contact Us */}
-          <TouchableOpacity
+          {/* <TouchableOpacity
             className={`mb-3 flex-row items-center rounded-lg ${isDark ? 'bg-slate-800/50' : 'bg-white'} px-4 py-4`}
             style={{ elevation: isDark ? 0 : 2 }}
             activeOpacity={0.7}
@@ -172,13 +172,14 @@ export default function ProfileScreen({
               <Text className={`font-semibold ${isDark ? 'text-white' : 'text-slate-700'}`}>Contact Us</Text>
             </View>
             <Text className={isDark ? 'text-gray-400' : 'text-gray-500'}>→</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           {/* Terms and Condition */}
           <TouchableOpacity
             className={`flex-row items-center rounded-lg ${isDark ? 'bg-slate-800/50' : 'bg-white'} px-4 py-4`}
             style={{ elevation: isDark ? 0 : 2 }}
             activeOpacity={0.7}
+            onPress={onShowTerms}
           >
             <View
               className={`h-10 w-10 items-center justify-center rounded-lg ${isDark ? 'bg-purple-500/20' : 'bg-purple-100'}`}
@@ -196,6 +197,13 @@ export default function ProfileScreen({
         {/* Ad Banner */}
         <View className="mx-6 my-6 rounded-xl overflow-hidden">
           <AdBanner isDark={isDark} />
+        </View>
+
+        {/* Developer Credit */}
+        <View className="items-center pb-4">
+          <Text className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+            Made with ❤️ by LightApps Studio
+          </Text>
         </View>
 
         {/* Bottom spacing */}

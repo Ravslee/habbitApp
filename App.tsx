@@ -10,6 +10,7 @@ import ProfileScreen from "./src/screens/ProfileScreen";
 import ManageHabitsScreen from "./src/screens/ManageHabitsScreen";
 import HabitSettingsScreen from "./src/screens/HabitSettingsScreen";
 import ProfileEditScreen from "./src/screens/ProfileEditScreen";
+import TermsScreen from "./src/screens/TermsScreen";
 import BottomTabNavigation from "./src/components/BottomTabNavigation";
 import ErrorBoundary from "./src/components/ErrorBoundary";
 import { loadAppData, saveAppData, AppData } from "./src/utils/storage";
@@ -55,6 +56,7 @@ export default function App() {
   const [showManageHabits, setShowManageHabits] = useState(false);
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [editingProfile, setEditingProfile] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
 
   // Ref to track if we should save (to debounce saves)
   const saveTimeoutRef = useRef<number | null>(null);
@@ -234,6 +236,14 @@ export default function App() {
     setEditingProfile(false);
   }, []);
 
+  const handleShowTerms = useCallback(() => {
+    setShowTerms(true);
+  }, []);
+
+  const handleBackFromTerms = useCallback(() => {
+    setShowTerms(false);
+  }, []);
+
   // Show splash screen first
   if (showSplash) {
     return <SplashScreen />;
@@ -268,6 +278,16 @@ export default function App() {
     );
   }
 
+  // Show Terms screen
+  if (showTerms) {
+    return (
+      <TermsScreen
+        onBack={handleBackFromTerms}
+        isDark={isDark}
+      />
+    );
+  }
+
   // Show ManageHabits screen
   if (showManageHabits) {
     return (
@@ -297,6 +317,7 @@ export default function App() {
             onUpdateProfile={updateProfile}
             onManageHabits={handleManageHabits}
             onEditProfile={handleEditProfile}
+            onShowTerms={handleShowTerms}
             theme={theme}
             onToggleTheme={() => setTheme(theme === 'light' ? 'dark' : 'light')}
             isDark={isDark}

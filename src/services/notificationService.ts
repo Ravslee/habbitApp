@@ -43,6 +43,7 @@ export async function showTestNotification(habitName: string) {
             android: {
                 channelId: 'habit-reminders',
                 importance: AndroidImportance.HIGH,
+                smallIcon: 'ic_notification',
                 pressAction: {
                     id: 'default',
                 },
@@ -98,6 +99,7 @@ export async function scheduleHabitNotification(habit: Habit, settings: Notifica
                 android: {
                     channelId: 'habit-reminders',
                     importance: AndroidImportance.HIGH,
+                    smallIcon: 'ic_notification',
                     pressAction: {
                         id: 'default',
                     },
@@ -118,6 +120,7 @@ export async function scheduleHabitNotification(habit: Habit, settings: Notifica
             android: {
                 channelId: 'habit-reminders',
                 importance: AndroidImportance.DEFAULT,
+                smallIcon: 'ic_notification',
                 pressAction: {
                     id: 'default',
                 },
@@ -170,6 +173,7 @@ async function scheduleRecurringNotifications(
                 android: {
                     channelId: 'habit-reminders',
                     importance: AndroidImportance.HIGH,
+                    smallIcon: 'ic_notification',
                     pressAction: {
                         id: 'default',
                     },

@@ -16,44 +16,45 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
   }, [onFinish]);
 
   return (
-    <View className="flex-1 items-center justify-center bg-blue-950 px-6">
+    <View className="flex-1 items-center justify-center bg-gray-50 px-6">
       {/* Header with Logo */}
       <View className="mb-8 items-center">
-        <Text className="text-4xl font-bold text-white">
-          Habbit<Text className="text-blue-400"> Tracker</Text>
+        <Text className="text-4xl font-bold text-slate-700">
+          Hab<Text className="text-purple-500">ik</Text>
         </Text>
       </View>
 
       {/* Illustration Area */}
-      <View className="mb-12 h-80 w-80 items-center justify-center rounded-2xl bg-slate-800">
+      <View className="mb-12 h-80 w-80 items-center justify-center rounded-2xl bg-white shadow-lg">
         {/* Placeholder for illustration - you can replace with SVG or Image */}
         <View className="items-center">
           {/* Person icon representation */}
-          <View className="mb-4 h-32 w-32 items-center justify-center rounded-full bg-pink-300">
+          <View className="mb-4 h-32 w-32 items-center justify-center rounded-full bg-purple-100">
             <Text className="text-6xl">👤</Text>
           </View>
 
           {/* Checkmark circle */}
-          <View className="absolute -right-2 -top-2 h-16 w-16 items-center justify-center rounded-full bg-blue-400">
+          <View className="absolute -right-2 -top-2 h-16 w-16 items-center justify-center rounded-full bg-purple-500">
             <Text className="text-3xl font-bold text-white">✓</Text>
           </View>
         </View>
 
         {/* Card representation */}
-        <View className="absolute bottom-8 w-48 rounded-lg bg-white p-4">
-          <View className="mb-2 h-2 w-20 rounded bg-blue-400" />
-          <View className="h-2 w-32 rounded bg-gray-300" />
+        <View className="absolute bottom-8 w-48 rounded-lg bg-purple-50 p-4 border border-purple-100">
+          <View className="mb-2 h-2 w-20 rounded bg-purple-500" />
+          <View className="h-2 w-32 rounded bg-purple-200" />
         </View>
       </View>
 
       {/* Description Text */}
-      <Text className="mb-8 text-center text-lg font-semibold text-white">
-        Transform Your Life with Habbit Tracker: How to Build Lasting Habits
-        and Achieve Your Goals
+      <Text className="mb-8 text-center text-lg font-semibold text-slate-600">
+        Transform Your Life with Habik: Build Lasting Habits and Achieve Your Goals
       </Text>
 
-      {/* Blue Underline */}
-      <View className="h-1 w-24 rounded-full bg-blue-400" />
+      {/* Purple Underline */}
+      <View className="h-1 w-24 rounded-full bg-purple-500" />
     </View>
   );
 }
+
+

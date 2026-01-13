@@ -1,6 +1,6 @@
 import "./global.css"
 import { useState, useEffect, useCallback, useRef } from "react";
-import { View } from "react-native";
+import { View, BackHandler } from "react-native";
 import SplashScreen from "./src/screens/SplashScreen";
 import OnboardingScreen from "./src/screens/OnboardingScreen";
 import HomeScreen from "./src/screens/HomeScreen";
@@ -248,6 +248,36 @@ export default function App() {
   if (showSplash) {
     return <SplashScreen />;
   }
+
+  // Handle hardware back button
+  useEffect(() => {
+    const backAction = () => {
+      if (editingHabit) {
+        setEditingHabit(null);
+        return true;
+      }
+      if (editingProfile) {
+        setEditingProfile(false);
+        return true;
+      }
+      if (showTerms) {
+        setShowTerms(false);
+        return true;
+      }
+      if (showManageHabits) {
+        setShowManageHabits(false);
+        return true;
+      }
+      return false;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [editingHabit, editingProfile, showTerms, showManageHabits]);
 
   // Show onboarding if user hasn't completed it
   if (!userProfile) {

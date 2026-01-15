@@ -152,9 +152,18 @@ export default function JourneyScreen({ habits, habitHistory, theme, isDark }: J
     }).length;
 
     // Days on journey (from first completion to now)
-    const daysOnJourney = allDates.length > 0
-      ? Math.ceil((today.getTime() - new Date(allDates[0]).getTime()) / (1000 * 60 * 60 * 24)) + 1
-      : 0;
+    let daysOnJourney = 0;
+    if (allDates.length > 0) {
+      const firstDateStr = allDates[0];
+      const [year, month, day] = firstDateStr.split('-').map(Number);
+      const startDate = new Date(year, month - 1, day); // Local midnight
+
+      const now = new Date();
+      const todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // Local midnight
+
+      const diffTime = todayDate.getTime() - startDate.getTime();
+      daysOnJourney = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24))) + 1;
+    }
 
     return {
       totalCompleted,

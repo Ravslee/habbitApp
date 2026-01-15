@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Linking } from "react-native";
 
 interface TermsScreenProps {
     onBack: () => void;
@@ -98,6 +98,16 @@ export default function TermsScreen({ onBack, isDark }: TermsScreenProps) {
                         By using Habik, you acknowledge that you have read and understood these Terms and Conditions.
                     </Text>
                 </View>
+
+                {/* Privacy Policy Link */}
+                <TouchableOpacity
+                    onPress={() => Linking.openURL('https://your-privacy-policy-url.com')}
+                    className="mt-4 mb-8 items-center"
+                >
+                    <Text className={`text-sm font-bold underline ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>
+                        View Privacy Policy
+                    </Text>
+                </TouchableOpacity>
             </ScrollView>
         </View>
     );

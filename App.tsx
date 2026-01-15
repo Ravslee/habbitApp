@@ -244,11 +244,6 @@ export default function App() {
     setShowTerms(false);
   }, []);
 
-  // Show splash screen first
-  if (showSplash) {
-    return <SplashScreen />;
-  }
-
   // Handle hardware back button
   useEffect(() => {
     const backAction = () => {
@@ -278,6 +273,11 @@ export default function App() {
 
     return () => backHandler.remove();
   }, [editingHabit, editingProfile, showTerms, showManageHabits]);
+
+  // Show splash screen first
+  if (showSplash) {
+    return <SplashScreen />;
+  }
 
   // Show onboarding if user hasn't completed it
   if (!userProfile) {

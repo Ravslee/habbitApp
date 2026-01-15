@@ -4,7 +4,7 @@
 
 export const AD_CONFIG = {
     // Set to false when you have real Ad Unit IDs from AdMob
-    isTestMode: true,
+    isTestMode: false,
 
     // Test Ad Unit IDs from Google (for development only)
     // These will show test ads that say "Test Ad"

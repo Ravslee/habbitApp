@@ -26,9 +26,22 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
     };
 
     const isValidDate = (dateString: string) => {
-        // Simple validation for DD/MM/YYYY format
+        // Format check
         const regex = /^\d{2}\/\d{2}\/\d{4}$/;
-        return regex.test(dateString);
+        if (!regex.test(dateString)) return false;
+
+        const [dayStr, monthStr, yearStr] = dateString.split('/');
+        const day = parseInt(dayStr, 10);
+        const month = parseInt(monthStr, 10);
+        const year = parseInt(yearStr, 10);
+
+        // Basic range checks
+        if (year < 1900 || year > new Date().getFullYear()) return false;
+        if (month < 1 || month > 12) return false;
+
+        // Days in month check
+        const daysInMonth = new Date(year, month, 0).getDate();
+        return day > 0 && day <= daysInMonth;
     };
 
     const canContinue = step === 1 ? name.trim().length > 0 : isValidDate(dob);

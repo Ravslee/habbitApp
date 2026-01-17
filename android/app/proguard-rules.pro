@@ -8,3 +8,10 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+
+# Keep AdMob (Google Mobile Ads)
+-keep class com.google.android.gms.ads.** { *; }
+-keep class com.google.ads.** { *; }
+
+# Keep React Native Google Mobile Ads
+-keep class io.invertase.googlemobileads.** { *; }

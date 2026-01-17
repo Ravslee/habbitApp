@@ -16,6 +16,7 @@ import ErrorBoundary from "./src/components/ErrorBoundary";
 import { loadAppData, saveAppData, AppData } from "./src/utils/storage";
 import { ThemeMode } from "./src/context/ThemeContext";
 import { initializeNotifications, scheduleHabitNotification, cancelHabitNotification } from "./src/services/notificationService";
+import mobileAds from 'react-native-google-mobile-ads';
 
 type Tab = "home" | "statistics" | "journey" | "profile";
 
@@ -73,6 +74,9 @@ export default function App() {
   useEffect(() => {
     const initializeApp = async () => {
       try {
+        // Initialize AdMob SDK
+        await mobileAds().initialize();
+
         // Initialize notification system
         await initializeNotifications();
 

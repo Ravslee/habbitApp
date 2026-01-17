@@ -1,4 +1,4 @@
-package com.habbitapp
+package com.lightapps.habik
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

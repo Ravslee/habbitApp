@@ -1,4 +1,4 @@
-package com.habbitapp
+package com.lightapps.habik
 
 import android.app.Application
 import com.facebook.react.PackageList

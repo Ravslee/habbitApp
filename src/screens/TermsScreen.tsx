@@ -101,7 +101,7 @@ export default function TermsScreen({ onBack, isDark }: TermsScreenProps) {
 
                 {/* Privacy Policy Link */}
                 <TouchableOpacity
-                    onPress={() => Linking.openURL('https://your-privacy-policy-url.com')}
+                    onPress={() => Linking.openURL('https://lightappstudio.netlify.app/privacy')}
                     className="mt-4 mb-8 items-center"
                 >
                     <Text className={`text-sm font-bold underline ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>

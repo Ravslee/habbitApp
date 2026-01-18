@@ -35,7 +35,11 @@ export default function HomeScreen({ habits, habitHistory, onToggleHabit, userNa
         <View className="px-6 pt-6 pb-4">
           <Text className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-700'}`}>Hello, {userName}</Text>
           <Text className={`mt-1 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-            Welcome back to your habit journey
+            {totalCount === 0
+              ? "Start your journey by adding a new habit!"
+              : completedCount === totalCount
+                ? "All habits completed! Amazing job! 🎉"
+                : "Ready to keep the momentum going?"}
           </Text>
         </View>
 

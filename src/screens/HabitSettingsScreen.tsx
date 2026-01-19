@@ -32,7 +32,13 @@ export default function HabitSettingsScreen({
     isDark = false,
 }: HabitSettingsScreenProps) {
     const [enabled, setEnabled] = useState(habit.notification?.enabled ?? false);
-    const [reminderTime, setReminderTime] = useState(habit.notification?.reminderTime ?? "09:00");
+    const [reminderTime, setReminderTime] = useState(() => {
+        if (habit.notification?.reminderTime) return habit.notification.reminderTime;
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
+    });
     const [recurring, setRecurring] = useState(habit.notification?.recurring ?? false);
     const [intervalMinutes, setIntervalMinutes] = useState(habit.notification?.intervalMinutes ?? 60);
     const [showTimePicker, setShowTimePicker] = useState(false);

@@ -5,7 +5,7 @@ import notifee, {
     TimestampTrigger,
 } from '@notifee/react-native';
 import { NotificationSettings, Habit } from '../../App';
-import { Alert } from 'react-native';
+import { Alert, Platform } from 'react-native';
 
 // Create a notification channel for Android (required for Android 8+)
 async function createNotificationChannel() {
@@ -43,7 +43,7 @@ export async function showTestNotification(habitName: string) {
             android: {
                 channelId: 'habit-reminders',
                 importance: AndroidImportance.HIGH,
-                smallIcon: 'ic_notification',
+                smallIcon: 'ic_launcher',
                 pressAction: {
                     id: 'default',
                 },
@@ -67,8 +67,27 @@ export async function scheduleHabitNotification(habit: Habit, settings: Notifica
             return;
         }
 
+        // Validate reminderTime format
+        if (!settings.reminderTime || !/^\d{1,2}:\d{2}$/.test(settings.reminderTime)) {
+            console.error('Invalid reminder time format:', settings.reminderTime);
+            return;
+        }
+
+        // Check for exact alarm permission on Android 12+ (API 31+)
+        const settingsCheck = await notifee.getNotificationSettings();
+        if (Platform.OS === 'android' && Platform.Version >= 31) {
+            const alarmPermission = await notifee.getNotificationSettings();
+            // Note: notifee.getNotificationSettings() returns alarm permission in 'android.alarm' in newer versions
+            // However, for safety we can just try/catch the scheduling
+        }
+
         // Parse the reminder time
         const [hours, minutes] = settings.reminderTime.split(':').map(Number);
+
+        if (isNaN(hours) || isNaN(minutes)) {
+            console.error('Invalid time values:', hours, minutes);
+            return;
+        }
 
         // Calculate the next trigger time
         const now = new Date();
@@ -81,6 +100,12 @@ export async function scheduleHabitNotification(habit: Habit, settings: Notifica
             console.log('Time already passed, scheduling for tomorrow');
         }
 
+        // Validation for timestamp
+        if (isNaN(triggerDate.getTime())) {
+            console.error('Invalid trigger date calculated');
+            return;
+        }
+
         console.log('Scheduling notification for:', triggerDate.toLocaleString());
 
         // Create the trigger
@@ -88,6 +113,9 @@ export async function scheduleHabitNotification(habit: Habit, settings: Notifica
             type: TriggerType.TIMESTAMP,
             timestamp: triggerDate.getTime(),
             repeatFrequency: RepeatFrequency.DAILY,
+            alarmManager: {
+                allowWhileIdle: true,
+            }
         };
 
         // Schedule the notification
@@ -95,11 +123,11 @@ export async function scheduleHabitNotification(habit: Habit, settings: Notifica
             {
                 id: `habit-${habit.id}`,
                 title: `⏰ Time for: ${habit.name}`,
-                body: `Don't forget to complete your "${habit.name}" habit today! ${habit.icon}`,
+                body: `Don't forget to complete your "${habit.name}" habit today! ${habit.icon || ''}`,
                 android: {
                     channelId: 'habit-reminders',
                     importance: AndroidImportance.HIGH,
-                    smallIcon: 'ic_notification',
+                    smallIcon: 'ic_launcher',
                     pressAction: {
                         id: 'default',
                     },
@@ -120,7 +148,7 @@ export async function scheduleHabitNotification(habit: Habit, settings: Notifica
             android: {
                 channelId: 'habit-reminders',
                 importance: AndroidImportance.DEFAULT,
-                smallIcon: 'ic_notification',
+                smallIcon: 'ic_launcher',
                 pressAction: {
                     id: 'default',
                 },
@@ -131,9 +159,22 @@ export async function scheduleHabitNotification(habit: Habit, settings: Notifica
         if (settings.recurring && settings.intervalMinutes) {
             await scheduleRecurringNotifications(habit, settings, triggerDate);
         }
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error scheduling notification:', error);
-        Alert.alert('Scheduling Error', String(error));
+
+        // Handle precise alarm permission error (SecurityException)
+        if (Platform.OS === 'android' && error.message && error.message.includes('exact alarm')) {
+            Alert.alert(
+                'Permission Required',
+                'To schedule accurate reminders, please allow "Alarms & Reminders" permission in settings.',
+                [
+                    { text: 'Cancel', style: 'cancel' },
+                    { text: 'Open Settings', onPress: () => notifee.openAlarmPermissionSettings() }
+                ]
+            );
+        } else {
+            Alert.alert('Scheduling Error', String(error));
+        }
     }
 }
 
@@ -173,7 +214,7 @@ async function scheduleRecurringNotifications(
                 android: {
                     channelId: 'habit-reminders',
                     importance: AndroidImportance.HIGH,
-                    smallIcon: 'ic_notification',
+                    smallIcon: 'ic_launcher',
                     pressAction: {
                         id: 'default',
                     },

@@ -84,6 +84,11 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 4
         versionName "1.03"
+        externalNativeBuild {
+            cmake {
+                arguments "-DANDROID_LINKER_FLAGS=-fuse-ld=lld"
+            }
+        }
     }
     signingConfigs {
         debug {

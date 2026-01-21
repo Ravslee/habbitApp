@@ -3,6 +3,7 @@ import notifee, {
     RepeatFrequency,
     AndroidImportance,
     TimestampTrigger,
+    AndroidNotificationSetting,
 } from '@notifee/react-native';
 import { NotificationSettings, Habit } from '../../App';
 import { Alert, Platform } from 'react-native';
@@ -74,11 +75,23 @@ export async function scheduleHabitNotification(habit: Habit, settings: Notifica
         }
 
         // Check for exact alarm permission on Android 12+ (API 31+)
-        const settingsCheck = await notifee.getNotificationSettings();
         if (Platform.OS === 'android' && Platform.Version >= 31) {
-            const alarmPermission = await notifee.getNotificationSettings();
-            // Note: notifee.getNotificationSettings() returns alarm permission in 'android.alarm' in newer versions
-            // However, for safety we can just try/catch the scheduling
+            const settings = await notifee.getNotificationSettings();
+            if (settings.android.alarm !== AndroidNotificationSetting.ENABLED) {
+                // Show alert and ask to open settings
+                Alert.alert(
+                    'Permission Required',
+                    'To ensure your habit reminders arrive at the exact time, please allow "Alarms & Reminders" permission.',
+                    [
+                        { text: 'Cancel', style: 'cancel' },
+                        {
+                            text: 'Open Settings',
+                            onPress: async () => await notifee.openAlarmPermissionSettings(),
+                        },
+                    ]
+                );
+                return;
+            }
         }
 
         // Parse the reminder time

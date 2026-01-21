@@ -7,6 +7,7 @@ import {
     Switch,
     Platform,
 } from "react-native";
+import Icon from 'react-native-vector-icons/Feather';
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Habit, NotificationSettings } from "../../App";
 
@@ -158,7 +159,7 @@ export default function HabitSettingsScreen({
                                             </Text>
                                         </View>
                                     </View>
-                                    <Text className={`text-xl ${isDark ? 'text-purple-400' : 'text-purple-500'}`}>✏️</Text>
+                                    <Icon name="edit-2" size={20} color={isDark ? '#a78bfa' : '#8b5cf6'} />
                                 </TouchableOpacity>
 
                                 {/* Time Picker Modal */}

@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, ScrollView, TouchableOpacity, Switch, Linking, Platform, Image } from "react-native";
+import Icon from 'react-native-vector-icons/Feather';
 import { UserProfile } from "../../App";
 import { ThemeMode } from "../context/ThemeContext";
 import AdBanner from "../components/AdBanner";
@@ -53,7 +54,7 @@ export default function ProfileScreen({
             className={`absolute right-3 top-3 h-8 w-8 items-center justify-center rounded-full ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}
             onPress={onEditProfile}
           >
-            <Text className="text-base">✏️</Text>
+            <Icon name="edit-2" size={16} color={isDark ? '#FFF' : '#334155'} />
           </TouchableOpacity>
 
           <View className="flex-row items-center">
@@ -208,7 +209,7 @@ export default function ProfileScreen({
 
         {/* Bottom spacing */}
         <View className="h-24" />
-      </ScrollView>
-    </View>
+      </ScrollView >
+    </View >
   );
 }

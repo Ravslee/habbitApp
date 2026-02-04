@@ -36,7 +36,7 @@ export default function AboutScreen({ onBack, isDark }: AboutScreenProps) {
                         Habik
                     </Text>
                     <Text className={`mt-1 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                        Version 1.0.4
+                        Version 1.0.5
                     </Text>
                 </View>
 

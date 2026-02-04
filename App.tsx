@@ -11,6 +11,8 @@ import ManageHabitsScreen from "./src/screens/ManageHabitsScreen";
 import HabitSettingsScreen from "./src/screens/HabitSettingsScreen";
 import ProfileEditScreen from "./src/screens/ProfileEditScreen";
 import TermsScreen from "./src/screens/TermsScreen";
+import AboutScreen from "./src/screens/AboutScreen";
+import HelpScreen from "./src/screens/HelpScreen";
 import BottomTabNavigation from "./src/components/BottomTabNavigation";
 import ErrorBoundary from "./src/components/ErrorBoundary";
 import { loadAppData, saveAppData, AppData } from "./src/utils/storage";
@@ -58,6 +60,8 @@ export default function App() {
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [editingProfile, setEditingProfile] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
 
   // Ref to track if we should save (to debounce saves)
   const saveTimeoutRef = useRef<number | null>(null);
@@ -84,7 +88,10 @@ export default function App() {
         setUserProfile(data.userProfile);
         setHabits(data.habits);
         setHabitHistory(data.habitHistory);
-        // Theme is now fixed to light - ignore saved theme
+        // Restore saved theme or default to light if not set
+        if (data.theme) {
+          setTheme(data.theme as ThemeMode);
+        }
       } catch (error) {
         console.error('Error loading app data:', error);
       } finally {
@@ -248,6 +255,22 @@ export default function App() {
     setShowTerms(false);
   }, []);
 
+  const handleShowAbout = useCallback(() => {
+    setShowAbout(true);
+  }, []);
+
+  const handleBackFromAbout = useCallback(() => {
+    setShowAbout(false);
+  }, []);
+
+  const handleShowHelp = useCallback(() => {
+    setShowHelp(true);
+  }, []);
+
+  const handleBackFromHelp = useCallback(() => {
+    setShowHelp(false);
+  }, []);
+
   // Handle hardware back button
   useEffect(() => {
     const backAction = () => {
@@ -263,6 +286,14 @@ export default function App() {
         setShowTerms(false);
         return true;
       }
+      if (showAbout) {
+        setShowAbout(false);
+        return true;
+      }
+      if (showHelp) {
+        setShowHelp(false);
+        return true;
+      }
       if (showManageHabits) {
         setShowManageHabits(false);
         return true;
@@ -276,7 +307,7 @@ export default function App() {
     );
 
     return () => backHandler.remove();
-  }, [editingHabit, editingProfile, showTerms, showManageHabits]);
+  }, [editingHabit, editingProfile, showTerms, showManageHabits, showAbout, showHelp]);
 
   // Show splash screen first
   if (showSplash) {
@@ -322,6 +353,26 @@ export default function App() {
     );
   }
 
+  // Show About screen
+  if (showAbout) {
+    return (
+      <AboutScreen
+        onBack={handleBackFromAbout}
+        isDark={isDark}
+      />
+    );
+  }
+
+  // Show Help screen
+  if (showHelp) {
+    return (
+      <HelpScreen
+        onBack={handleBackFromHelp}
+        isDark={isDark}
+      />
+    );
+  }
+
   // Show ManageHabits screen
   if (showManageHabits) {
     return (
@@ -352,6 +403,8 @@ export default function App() {
             onManageHabits={handleManageHabits}
             onEditProfile={handleEditProfile}
             onShowTerms={handleShowTerms}
+            onShowAbout={handleShowAbout}
+            onShowHelp={handleShowHelp}
             theme={theme}
             onToggleTheme={() => setTheme(theme === 'light' ? 'dark' : 'light')}
             isDark={isDark}

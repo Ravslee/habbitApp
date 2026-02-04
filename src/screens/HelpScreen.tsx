@@ -1,0 +1,125 @@
+import React, { useState } from "react";
+import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import Icon from 'react-native-vector-icons/Feather';
+
+interface HelpScreenProps {
+    onBack: () => void;
+    isDark: boolean;
+}
+
+interface FAQItem {
+    id: string;
+    question: string;
+    answer: string;
+    icon: string;
+}
+
+export default function HelpScreen({ onBack, isDark }: HelpScreenProps) {
+    const [expandedId, setExpandedId] = useState<string | null>(null);
+
+    const toggleExpand = (id: string) => {
+        setExpandedId(expandedId === id ? null : id);
+    };
+
+    const faqs: FAQItem[] = [
+        {
+            id: '1',
+            question: "Creating Habits",
+            answer: "To create a habit, go to the 'Manage Habits' section from your Profile or Home screen. Tap the '+' button, enter a name for your habit, and choose an icon that represents it.",
+            icon: 'plus-circle'
+        },
+        {
+            id: '2',
+            question: "Tracking Progress",
+            answer: "On the Home screen, simply tap a habit to mark it as complete for the day. Tap it again to unmark it. Your daily progress will be saved automatically.",
+            icon: 'check-circle'
+        },
+        {
+            id: '3',
+            question: "Viewing Statistics",
+            answer: "Navigate to the Statistics tab to view detailed insights. You can see your completion rates, streaks, and monthly performance for each habit.",
+            icon: 'bar-chart-2'
+        },
+        {
+            id: '4',
+            question: "Setting Reminders",
+            answer: "Go to Profile > Manage Habits, then tap on any habit to open its settings. From there, you can enable daily reminders and set a specific time.",
+            icon: 'bell'
+        },
+        {
+            id: '5',
+            question: "Dark Mode",
+            answer: "You can toggle Dark Mode on or off in the Profile screen under the 'Appearance' section.",
+            icon: 'moon'
+        }
+    ];
+
+    return (
+        <View className={`flex-1 ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}>
+            {/* Header */}
+            <View className="flex-row items-center px-6 pt-6 pb-4">
+                <TouchableOpacity
+                    onPress={onBack}
+                    className={`h-10 w-10 items-center justify-center rounded-full ${isDark ? 'bg-slate-800' : 'bg-white shadow-sm'}`}
+                >
+                    <Text className={`text-xl ${isDark ? 'text-white' : 'text-slate-700'}`}>←</Text>
+                </TouchableOpacity>
+                <Text className={`ml-4 text-xl font-bold ${isDark ? 'text-white' : 'text-slate-700'}`}>
+                    Help & Support
+                </Text>
+            </View>
+
+            <ScrollView showsVerticalScrollIndicator={false} className="flex-1 px-6">
+                <Text className={`mb-6 text-base ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                    Everything you need to know about using Habik.
+                </Text>
+
+                {faqs.map((faq) => (
+                    <View
+                        key={faq.id}
+                        className={`mb-4 rounded-xl overflow-hidden ${isDark ? 'bg-slate-800' : 'bg-white shadow-sm'}`}
+                    >
+                        <TouchableOpacity
+                            onPress={() => toggleExpand(faq.id)}
+                            className="flex-row items-center justify-between p-4"
+                            activeOpacity={0.7}
+                        >
+                            <View className="flex-row items-center flex-1 pr-4">
+                                <View className={`h-8 w-8 items-center justify-center rounded-full mr-3 ${isDark ? 'bg-slate-700' : 'bg-purple-50'}`}>
+                                    <Icon name={faq.icon} size={16} color={isDark ? '#a78bfa' : '#8b5cf6'} />
+                                </View>
+                                <Text className={`text-base font-semibold ${isDark ? 'text-white' : 'text-slate-700'}`}>
+                                    {faq.question}
+                                </Text>
+                            </View>
+                            <Icon
+                                name={expandedId === faq.id ? 'chevron-up' : 'chevron-down'}
+                                size={20}
+                                color={isDark ? '#94a3b8' : '#9ca3af'}
+                            />
+                        </TouchableOpacity>
+
+                        {expandedId === faq.id && (
+                            <View className={`px-4 pb-4 pt-0`}>
+                                <View className={`h-[1px] w-full mb-3 ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`} />
+                                <Text className={`leading-6 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                                    {faq.answer}
+                                </Text>
+                            </View>
+                        )}
+                    </View>
+                ))}
+
+                {/* Additional Help Contact (Optional presentation) */}
+                <View className={`mt-4 mb-10 rounded-xl p-6 ${isDark ? 'bg-purple-900/20' : 'bg-purple-50'}`}>
+                    <Text className={`mb-2 text-center font-semibold ${isDark ? 'text-purple-200' : 'text-purple-700'}`}>
+                        Still need help?
+                    </Text>
+                    <Text className={`text-center text-sm ${isDark ? 'text-purple-300' : 'text-purple-600'}`}>
+                        Contact us at support@habik.app
+                    </Text>
+                </View>
+            </ScrollView>
+        </View>
+    );
+}

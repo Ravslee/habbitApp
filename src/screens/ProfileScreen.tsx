@@ -11,6 +11,8 @@ interface ProfileScreenProps {
   onManageHabits: () => void;
   onEditProfile: () => void;
   onShowTerms: () => void;
+  onShowAbout: () => void;
+  onShowHelp: () => void;
   theme: ThemeMode;
   onToggleTheme: () => void;
   isDark: boolean;
@@ -22,6 +24,8 @@ export default function ProfileScreen({
   onManageHabits,
   onEditProfile,
   onShowTerms,
+  onShowAbout,
+  onShowHelp,
   theme,
   onToggleTheme,
   isDark,
@@ -157,23 +161,44 @@ export default function ProfileScreen({
             <Text className={isDark ? 'text-gray-400' : 'text-gray-500'}>→</Text>
           </TouchableOpacity>
 
-          {/* Contact Us */}
-          {/* <TouchableOpacity
+
+          {/* About App */}
+          <TouchableOpacity
             className={`mb-3 flex-row items-center rounded-lg ${isDark ? 'bg-slate-800/50' : 'bg-white'} px-4 py-4`}
             style={{ elevation: isDark ? 0 : 2 }}
             activeOpacity={0.7}
+            onPress={onShowAbout}
           >
             <View
               className={`h-10 w-10 items-center justify-center rounded-lg ${isDark ? 'bg-purple-500/20' : 'bg-purple-100'}`}
               style={{ marginRight: 16 }}
             >
-              <Text className="text-lg">📞</Text>
+              <Text className="text-lg">ℹ️</Text>
             </View>
             <View className="flex-1">
-              <Text className={`font-semibold ${isDark ? 'text-white' : 'text-slate-700'}`}>Contact Us</Text>
+              <Text className={`font-semibold ${isDark ? 'text-white' : 'text-slate-700'}`}>About Habik</Text>
             </View>
             <Text className={isDark ? 'text-gray-400' : 'text-gray-500'}>→</Text>
-          </TouchableOpacity> */}
+          </TouchableOpacity>
+
+          {/* Help & Support */}
+          <TouchableOpacity
+            className={`mb-3 flex-row items-center rounded-lg ${isDark ? 'bg-slate-800/50' : 'bg-white'} px-4 py-4`}
+            style={{ elevation: isDark ? 0 : 2 }}
+            activeOpacity={0.7}
+            onPress={onShowHelp}
+          >
+            <View
+              className={`h-10 w-10 items-center justify-center rounded-lg ${isDark ? 'bg-purple-500/20' : 'bg-purple-100'}`}
+              style={{ marginRight: 16 }}
+            >
+              <Text className="text-lg">❓</Text>
+            </View>
+            <View className="flex-1">
+              <Text className={`font-semibold ${isDark ? 'text-white' : 'text-slate-700'}`}>Help & Support</Text>
+            </View>
+            <Text className={isDark ? 'text-gray-400' : 'text-gray-500'}>→</Text>
+          </TouchableOpacity>
 
           {/* Terms and Condition */}
           <TouchableOpacity
@@ -201,11 +226,11 @@ export default function ProfileScreen({
         </View>
 
         {/* Developer Credit */}
-        <View className="items-center pb-4">
+        {/* <View className="items-center pb-4">
           <Text className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
             Made with ❤️ by LightApps Studio
           </Text>
-        </View>
+        </View> */}
 
         {/* Bottom spacing */}
         <View className="h-24" />

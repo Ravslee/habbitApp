@@ -1,60 +1,95 @@
-import React from "react";
-import { View, Text } from "react-native";
+import React, { useEffect, useRef } from "react";
+import { View, Text, Image, Animated, Dimensions } from "react-native";
 
 interface SplashScreenProps {
   onFinish?: () => void;
 }
 
 export default function SplashScreen({ onFinish }: SplashScreenProps) {
-  React.useEffect(() => {
-    // Navigate to home screen after 3 seconds
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(0.8)).current;
+  const slideAnim = useRef(new Animated.Value(50)).current;
+
+  useEffect(() => {
+    // Start animations
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        friction: 8,
+        tension: 40,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 800,
+        useNativeDriver: true,
+      }),
+    ]).start();
+
+    // Navigate to home screen after delay
     const timer = setTimeout(() => {
       onFinish?.();
-    }, 3000);
+    }, 3000)
 
     return () => clearTimeout(timer);
-  }, [onFinish]);
+  }, [onFinish, fadeAnim, scaleAnim, slideAnim]);
 
   return (
-    <View className="flex-1 items-center justify-center bg-gray-50 px-6">
-      {/* Header with Logo */}
-      <View className="mb-8 items-center">
-        <Text className="text-4xl font-bold text-slate-700">
-          Hab<Text className="text-purple-500">ik</Text>
-        </Text>
+    <View className="flex-1 items-center justify-center bg-gray-50">
+      {/* Background decorations */}
+      <View className="absolute top-0 right-0 h-64 w-64 -mr-32 -mt-32 rounded-full bg-purple-100 opacity-50" />
+      <View className="absolute bottom-0 left-0 h-80 w-80 -ml-40 -mb-40 rounded-full bg-purple-100 opacity-50" />
+
+      {/* Main Content */}
+      <View className="items-center z-10">
+        <Animated.View
+          style={{
+            opacity: fadeAnim,
+            transform: [{ scale: scaleAnim }],
+          }}
+          className="mb-8"
+        >
+          <View className="h-40 w-40 items-center justify-center rounded-3xl bg-white shadow-xl overflow-hidden">
+            <Image
+              source={require('../assets/logo.png')}
+              style={{ width: '100%', height: '100%' }}
+              resizeMode="cover"
+            />
+          </View>
+        </Animated.View>
+
+        <Animated.View
+          style={{
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }],
+          }}
+          className="items-center"
+        >
+          <Text className="text-5xl font-bold text-slate-800 tracking-wider">
+            Hab<Text className="text-purple-600">ik</Text>
+          </Text>
+          <Text className="mt-3 text-lg font-medium text-slate-500 tracking-wide">
+            Build Better Habits
+          </Text>
+        </Animated.View>
       </View>
 
-      {/* Illustration Area */}
-      <View className="mb-12 h-80 w-80 items-center justify-center rounded-2xl bg-white shadow-lg">
-        {/* Placeholder for illustration - you can replace with SVG or Image */}
-        <View className="items-center">
-          {/* Person icon representation */}
-          <View className="mb-4 h-32 w-32 items-center justify-center rounded-full bg-purple-100">
-            <Text className="text-6xl">👤</Text>
-          </View>
-
-          {/* Checkmark circle */}
-          <View className="absolute -right-2 -top-2 h-16 w-16 items-center justify-center rounded-full bg-purple-500">
-            <Text className="text-3xl font-bold text-white">✓</Text>
-          </View>
-        </View>
-
-        {/* Card representation */}
-        <View className="absolute bottom-8 w-48 rounded-lg bg-purple-50 p-4 border border-purple-100">
-          <View className="mb-2 h-2 w-20 rounded bg-purple-500" />
-          <View className="h-2 w-32 rounded bg-purple-200" />
-        </View>
+      {/* Loading Indicator */}
+      <View className="absolute bottom-16">
+        <Animated.View
+          style={{ opacity: fadeAnim }}
+          className="flex-row items-center space-x-2"
+        >
+          <View className="h-1.5 w-1.5 rounded-full bg-purple-400" />
+          <View className="h-1.5 w-1.5 rounded-full bg-purple-600" />
+          <View className="h-1.5 w-1.5 rounded-full bg-purple-400" />
+        </Animated.View>
       </View>
-
-      {/* Description Text */}
-      <Text className="mb-8 text-center text-lg font-semibold text-slate-600">
-        Transform Your Life with Habik: Build Lasting Habits and Achieve Your Goals
-      </Text>
-
-      {/* Purple Underline */}
-      <View className="h-1 w-24 rounded-full bg-purple-500" />
     </View>
   );
 }
-
-

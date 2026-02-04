@@ -116,7 +116,7 @@ export default function HelpScreen({ onBack, isDark }: HelpScreenProps) {
                         Still need help?
                     </Text>
                     <Text className={`text-center text-sm ${isDark ? 'text-purple-300' : 'text-purple-600'}`}>
-                        Contact us at support@habik.app
+                        Contact us at studio.lighty@gmail.com
                     </Text>
                 </View>
             </ScrollView>

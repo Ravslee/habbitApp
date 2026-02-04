@@ -27,7 +27,7 @@ export default function AboutScreen({ onBack, isDark }: AboutScreenProps) {
                 <View className="items-center py-8">
                     <View className="h-24 w-24 items-center justify-center rounded-2xl bg-transparent mb-4 shadow-lg overflow-hidden">
                         <Image
-                            source={require('../assets/logo.png')}
+                            source={require('../assets/logo.jpg')}
                             style={{ width: '100%', height: '100%' }}
                             resizeMode="contain"
                         />

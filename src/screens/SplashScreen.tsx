@@ -56,7 +56,7 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
         >
           <View className="h-40 w-40 items-center justify-center rounded-3xl bg-white shadow-xl overflow-hidden">
             <Image
-              source={require('../assets/logo.png')}
+              source={require('../assets/logo.jpg')}
               style={{ width: '100%', height: '100%' }}
               resizeMode="cover"
             />

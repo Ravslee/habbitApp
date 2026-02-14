@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, Dimensions } from "react-nati
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Habit, HabitHistory } from "../../App";
 import BarChart from "../components/BarChart";
+import AdBanner from "../components/AdBanner";
 import { ThemeMode } from "../context/ThemeContext";
 
 interface StatisticsScreenProps {
@@ -190,6 +191,9 @@ export default function StatisticsScreen({ habits, habitHistory, theme, isDark }
         </Text>
 
       </ScrollView>
+      <View className="pb-6">
+        <AdBanner isDark={isDark} />
+      </View>
     </View>
   );
 }

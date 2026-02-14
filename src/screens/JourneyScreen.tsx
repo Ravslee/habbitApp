@@ -359,6 +359,10 @@ export default function JourneyScreen({ habits, habitHistory, theme, isDark }: J
 
         {/* Bottom Spacing */}
         <View className="h-24" />
+
+        <View className="pb-6">
+          <AdBanner isDark={isDark} />
+        </View>
       </ScrollView>
     </View>
   );

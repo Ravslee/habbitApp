@@ -4,6 +4,7 @@ import CircularProgress from "../components/CircularProgress";
 import HabitCard from "../components/HabitCard";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Habit, HabitHistory, UserProfile } from "../../App";
+import AdBanner from "../components/AdBanner";
 import { calculateStreak } from "../utils/streak";
 import { ThemeMode } from "../context/ThemeContext";
 
@@ -112,6 +113,10 @@ export default function HomeScreen({ habits, habitHistory, onToggleHabit, userNa
               />
             ))
           )}
+        </View>
+
+        <View className="pb-6">
+          <AdBanner isDark={isDark} />
         </View>
 
       </ScrollView>

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity, Alert } from "react-native";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import CreateHabitModal from "../components/CreateHabitModal";
+import AdBanner from "../components/AdBanner";
 import { Habit } from "../../App";
 
 interface ManageHabitsScreenProps {
@@ -224,6 +225,10 @@ export default function ManageHabitsScreen({ habits, onAddHabit, onUpdateHabit, 
 
                 {/* Bottom spacing */}
                 <View className="h-6" />
+
+                <View className="pb-6">
+                    <AdBanner isDark={isDark} />
+                </View>
             </ScrollView>
 
             {/* Create Habit Modal */}

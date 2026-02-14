@@ -7,7 +7,7 @@ import {
     Switch,
     Platform,
 } from "react-native";
-import Icon from 'react-native-vector-icons/Feather';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Habit, NotificationSettings } from "../../App";
 
@@ -89,13 +89,22 @@ export default function HabitSettingsScreen({
         });
     }, [enabled, reminderTime, recurring, intervalMinutes, onSave]);
 
+    // Helper to render icon
+    const renderIcon = (iconName: string) => {
+        const isIconName = /^[a-z0-9-]+$/.test(iconName);
+        if (isIconName) {
+            return <Icon name={iconName} size={32} color={isDark ? "#FFF" : "#334155"} />;
+        }
+        return <Text className="text-3xl">{iconName}</Text>;
+    };
+
     return (
         <View className={`flex-1 ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}>
             <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
                 {/* Header */}
                 <View className="px-6 pt-6 pb-4 flex-row items-center">
                     <TouchableOpacity onPress={onBack} style={{ marginRight: 16 }}>
-                        <Text className={`text-2xl ${isDark ? 'text-white' : 'text-slate-700'}`}>←</Text>
+                        <Icon name="arrow-left" size={24} color={isDark ? '#FFF' : '#334155'} />
                     </TouchableOpacity>
                     <View className="flex-1">
                         <Text className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-700'}`}>Habit Settings</Text>
@@ -111,7 +120,7 @@ export default function HabitSettingsScreen({
                         className={`h-14 w-14 items-center justify-center rounded-lg ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`}
                         style={{ marginRight: 16 }}
                     >
-                        <Text className="text-3xl">{habit.icon}</Text>
+                        {renderIcon(habit.icon)}
                     </View>
                     <Text className={`text-xl font-bold ${isDark ? 'text-white' : 'text-slate-700'}`}>{habit.name}</Text>
                 </View>
@@ -132,8 +141,8 @@ export default function HabitSettingsScreen({
                         <Switch
                             value={enabled}
                             onValueChange={setEnabled}
-                            trackColor={{ false: isDark ? "#475569" : "#d1d5db", true: "#8b5cf6" }}
-                            thumbColor={enabled ? "#a78bfa" : isDark ? "#94a3b8" : "#9ca3af"}
+                            trackColor={{ false: isDark ? "#475569" : "#d1d5db", true: "#8b56fc" }}
+                            thumbColor={enabled ? "#8b56fc" : isDark ? "#94a3b8" : "#9ca3af"}
                         />
                     </View>
 
@@ -149,7 +158,7 @@ export default function HabitSettingsScreen({
                                     activeOpacity={0.7}
                                 >
                                     <View className="flex-row items-center">
-                                        <Text style={{ fontSize: 24, marginRight: 12 }}>⏰</Text>
+                                        <Icon name="clock-outline" size={24} color={isDark ? '#FFF' : '#334155'} style={{ marginRight: 12 }} />
                                         <View>
                                             <Text className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-700'}`}>
                                                 {formatTimeDisplay(reminderTime)}
@@ -159,7 +168,7 @@ export default function HabitSettingsScreen({
                                             </Text>
                                         </View>
                                     </View>
-                                    <Icon name="edit-2" size={20} color={isDark ? '#a78bfa' : '#8b5cf6'} />
+                                    <Icon name="pencil" size={20} color={isDark ? '#8b56fc' : '#8b56fc'} />
                                 </TouchableOpacity>
 
                                 {/* Time Picker Modal */}
@@ -176,7 +185,7 @@ export default function HabitSettingsScreen({
                                         {Platform.OS === 'ios' && (
                                             <TouchableOpacity
                                                 onPress={() => setShowTimePicker(false)}
-                                                className="bg-purple-500 py-3 mx-4 mb-4 rounded-lg"
+                                                className="bg-primary py-3 mx-4 mb-4 rounded-lg"
                                                 activeOpacity={0.7}
                                             >
                                                 <Text className="text-white text-center font-semibold">Done</Text>
@@ -198,8 +207,8 @@ export default function HabitSettingsScreen({
                                 <Switch
                                     value={recurring}
                                     onValueChange={setRecurring}
-                                    trackColor={{ false: isDark ? "#475569" : "#d1d5db", true: "#8b5cf6" }}
-                                    thumbColor={recurring ? "#a78bfa" : isDark ? "#94a3b8" : "#9ca3af"}
+                                    trackColor={{ false: isDark ? "#475569" : "#d1d5db", true: "#8b56fc" }}
+                                    thumbColor={recurring ? "#8b56fc" : isDark ? "#94a3b8" : "#9ca3af"}
                                 />
                             </View>
 
@@ -215,7 +224,7 @@ export default function HabitSettingsScreen({
                                                 activeOpacity={0.7}
                                                 style={{
                                                     backgroundColor: intervalMinutes === option.value
-                                                        ? '#8b5cf6'
+                                                        ? '#8b56fc'
                                                         : isDark ? '#1e293b' : '#ffffff',
                                                     paddingHorizontal: 16,
                                                     paddingVertical: 12,
@@ -261,7 +270,7 @@ export default function HabitSettingsScreen({
             <View className="px-6 pb-8">
                 <TouchableOpacity
                     onPress={handleSave}
-                    className="rounded-lg bg-purple-500 py-4"
+                    className="rounded-lg bg-primary py-4"
                     activeOpacity={0.7}
                 >
                     <Text className="text-center text-lg font-semibold text-white">

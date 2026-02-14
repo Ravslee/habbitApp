@@ -35,7 +35,8 @@ export default function BarChart({ habits, habitHistory, isDark = true }: BarCha
 
     // Calculate percentage
     if (totalHabits === 0) return 0;
-    return Math.round((completedHabits.length / totalHabits) * 100);
+    const percentage = Math.round((completedHabits.length / totalHabits) * 100);
+    return Math.min(percentage, 100); // Cap at 100%
   });
 
   const maxHeight = 80; // Maximum bar height in pixels
@@ -57,13 +58,9 @@ export default function BarChart({ habits, habitHistory, isDark = true }: BarCha
               </Text>
               {/* Bar */}
               <View
-                className={`w-4 rounded-full ${isToday
-                  ? value === 100
-                    ? 'bg-green-500'
-                    : 'bg-purple-400'
-                  : isFuture
-                    ? isDark ? 'bg-slate-700' : 'bg-gray-300'
-                    : 'bg-purple-600'
+                className={`w-4 rounded-full ${value > 0
+                  ? 'bg-[#8b56fc]' // Purple for active
+                  : 'bg-[#2c2c2e]' // Dark gray for inactive
                   }`}
                 style={{ height: isFuture ? 4 : barHeight }}
               />
@@ -71,41 +68,20 @@ export default function BarChart({ habits, habitHistory, isDark = true }: BarCha
           );
         })}
       </View>
+
       {/* Day Labels */}
-      <View className="flex-row justify-between px-2 mt-2">
+      <View className="flex-row justify-between px-2 mt-4">
         {DAYS.map((day, index) => {
           const isToday = index === adjustedDayIndex;
           return (
             <View key={index} style={{ width: 36 }} className="items-center">
-              <Text className={`text-xs ${isToday ? `font-bold ${isDark ? 'text-white' : 'text-slate-700'}` : isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                {day}
+              <Text className={`text-xs font-medium ${isToday ? (isDark ? 'text-white' : 'text-[#8b56fc] font-bold') : 'text-gray-600'}`}>
+                {day.charAt(0)}
               </Text>
             </View>
           );
         })}
       </View>
-
-      {/* Summary Stats */}
-      <View className={`mt-4 flex-row justify-around border-t pt-4 ${isDark ? 'border-slate-700' : 'border-gray-200'}`}>
-        <View className="items-center">
-          <Text className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-700'}`}>
-            {weeklyData.filter(v => v > 0).length}
-          </Text>
-          <Text className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Active Days</Text>
-        </View>
-        <View className="items-center">
-          <Text className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-700'}`}>
-            {Math.round(weeklyData.reduce((a, b) => a + b, 0) / 7)}%
-          </Text>
-          <Text className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Avg. Completion</Text>
-        </View>
-        <View className="items-center">
-          <Text className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-700'}`}>
-            {weeklyData.filter(v => v === 100).length}
-          </Text>
-          <Text className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Perfect Days</Text>
-        </View>
-      </View>
-    </View>
+    </View >
   );
 }

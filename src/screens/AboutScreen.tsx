@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface AboutScreenProps {
     onBack: () => void;
@@ -15,7 +16,7 @@ export default function AboutScreen({ onBack, isDark }: AboutScreenProps) {
                     onPress={onBack}
                     className={`h-10 w-10 items-center justify-center rounded-full ${isDark ? 'bg-slate-800' : 'bg-white shadow-sm'}`}
                 >
-                    <Text className={`text-xl ${isDark ? 'text-white' : 'text-slate-700'}`}>←</Text>
+                    <Icon name="arrow-left" size={24} color={isDark ? '#FFF' : '#334155'} />
                 </TouchableOpacity>
                 <Text className={`ml-4 text-xl font-bold ${isDark ? 'text-white' : 'text-slate-700'}`}>
                     About Habik
@@ -36,7 +37,7 @@ export default function AboutScreen({ onBack, isDark }: AboutScreenProps) {
                         Habik
                     </Text>
                     <Text className={`mt-1 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                        Version 1.0.5
+                        Version 2.0.0
                     </Text>
                 </View>
 

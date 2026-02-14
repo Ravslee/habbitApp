@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text } from "react-native";
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface AchievementBadgeProps {
     icon: string;
@@ -20,39 +21,46 @@ export default function AchievementBadge({
 }: AchievementBadgeProps) {
     return (
         <View
-            className={`flex-row items-center p-4 mb-3 rounded-2xl border shadow-sm ${unlocked
+            className={`flex-row items-center p-4 mb-3 rounded-2xl ${unlocked
                 ? isDark
-                    ? "bg-amber-900/30 border-amber-600/50"
-                    : "bg-amber-50 border-amber-200"
+                    ? "bg-[#1e1e20]" // Unlocked: Dark Card
+                    : "bg-amber-50"
                 : isDark
-                    ? "bg-slate-800/50 border-slate-700/50"
-                    : "bg-white border-gray-200"
+                    ? "bg-[#1e1e20]" // Locked: Dark Card
+                    : "bg-white"
                 }`}
         >
             {/* Icon */}
             <View
                 className={`w-14 h-14 items-center justify-center rounded-xl ${unlocked
-                    ? isDark ? "bg-amber-500/30" : "bg-amber-100"
-                    : isDark ? "bg-slate-700/50" : "bg-gray-100"
+                    ? isDark ? "bg-[#2c2c2e]" : "bg-amber-100"
+                    : isDark ? "bg-[#2c2c2e]" : "bg-gray-100"
                     }`}
             >
-                <Text className={`text-2xl ${unlocked ? "" : "opacity-50"}`}>{icon}</Text>
+                <Icon
+                    name={icon}
+                    size={32}
+                    color={unlocked
+                        ? isDark ? "#8b56fc" : "#d97706"
+                        : isDark ? "#4b5563" : "#9ca3af"}
+                    style={{ opacity: unlocked ? 1 : 0.5 }}
+                />
             </View>
 
             {/* Content */}
             <View className="flex-1 ml-4">
                 <Text
                     className={`text-base font-bold ${unlocked
-                        ? isDark ? "text-amber-300" : "text-amber-600"
-                        : isDark ? "text-gray-400" : "text-gray-500"
+                        ? isDark ? "text-white" : "text-amber-600"
+                        : isDark ? "text-gray-500" : "text-gray-500"
                         }`}
                 >
                     {name}
                 </Text>
                 <Text
                     className={`text-xs mt-0.5 ${unlocked
-                        ? isDark ? "text-amber-400/70" : "text-amber-500"
-                        : isDark ? "text-gray-500" : "text-gray-400"
+                        ? isDark ? "text-gray-400" : "text-amber-500"
+                        : isDark ? "text-gray-600" : "text-gray-400"
                         }`}
                 >
                     {description}
@@ -60,26 +68,35 @@ export default function AchievementBadge({
 
                 {/* Progress bar for locked achievements */}
                 {!unlocked && progress > 0 && (
-                    <View className={`mt-2 h-1.5 rounded-full overflow-hidden ${isDark ? 'bg-slate-700' : 'bg-gray-200'}`}>
+                    <View className="mt-3 relative h-4 justify-center">
+                        {/* Track */}
+                        <View className={`absolute w-full h-1.5 rounded-full overflow-hidden ${isDark ? 'bg-[#2c2c2e]' : 'bg-gray-200'}`}>
+                            <View
+                                className={`h-full rounded-full ${isDark ? 'bg-gray-600' : 'bg-gray-400'}`}
+                                style={{ width: `${progress}%` }}
+                            />
+                        </View>
+
+                        {/* Tick Indicator */}
                         <View
-                            className={`h-full rounded-full ${isDark ? 'bg-amber-500/50' : 'bg-amber-400'}`}
-                            style={{ width: `${progress}%` }}
-                        />
+                            className="absolute"
+                            style={{
+                                left: `${progress}%`,
+                                marginLeft: -6, // Center the icon
+                            }}
+                        >
+                            <Icon name="check-bold" size={12} color={isDark ? '#9ca3af' : '#4b5563'} />
+                        </View>
                     </View>
                 )}
             </View>
 
             {/* Status indicator */}
-            <View
-                className={`w-8 h-8 items-center justify-center rounded-full ${unlocked
-                    ? "bg-amber-500"
-                    : isDark ? "bg-slate-700" : "bg-gray-200"
-                    }`}
-            >
+            <View className="w-10 h-10 items-center justify-center">
                 {unlocked ? (
-                    <Text className="text-white text-sm">✓</Text>
+                    <Icon name="star" size={32} color="#8b56fc" />
                 ) : (
-                    <Text className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>🔒</Text>
+                    <Icon name="lock" size={30} color={isDark ? '#4b5563' : '#9ca3af'} style={{ opacity: 0.5 }} />
                 )}
             </View>
         </View>

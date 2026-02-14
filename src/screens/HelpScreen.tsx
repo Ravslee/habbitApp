@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
-import Icon from 'react-native-vector-icons/Feather';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface HelpScreenProps {
     onBack: () => void;
@@ -25,32 +25,38 @@ export default function HelpScreen({ onBack, isDark }: HelpScreenProps) {
         {
             id: '1',
             question: "Creating Habits",
-            answer: "To create a habit, go to the 'Manage Habits' section from your Profile or Home screen. Tap the '+' button, enter a name for your habit, and choose an icon that represents it.",
+            answer: "To create a habit, go to Profile > Manage Habits. Tap '+ Create Your Own Habit' or select a template to get started.",
             icon: 'plus-circle'
         },
         {
             id: '2',
             question: "Tracking Progress",
-            answer: "On the Home screen, simply tap a habit to mark it as complete for the day. Tap it again to unmark it. Your daily progress will be saved automatically.",
+            answer: "On the Home screen, simply tap a habit card to mark it as complete for the day. Tap it again to undo.",
             icon: 'check-circle'
         },
         {
             id: '3',
             question: "Viewing Statistics",
             answer: "Navigate to the Statistics tab to view detailed insights. You can see your completion rates, streaks, and monthly performance for each habit.",
-            icon: 'bar-chart-2'
+            icon: 'chart-bar'
         },
         {
             id: '4',
             question: "Setting Reminders",
-            answer: "Go to Profile > Manage Habits, then tap on any habit to open its settings. From there, you can enable daily reminders and set a specific time.",
+            answer: "Go to Profile > Manage Habits and click on any habit to edit it. You can enable reminders and set a specific time.",
             icon: 'bell'
         },
         {
             id: '5',
+            question: "Deleting Habits",
+            answer: "In the Manage Habits screen, click the trash icon on any habit card to permanently delete it.",
+            icon: 'trash-can-outline'
+        },
+        {
+            id: '6',
             question: "Dark Mode",
             answer: "You can toggle Dark Mode on or off in the Profile screen under the 'Appearance' section.",
-            icon: 'moon'
+            icon: 'theme-light-dark'
         }
     ];
 
@@ -62,7 +68,7 @@ export default function HelpScreen({ onBack, isDark }: HelpScreenProps) {
                     onPress={onBack}
                     className={`h-10 w-10 items-center justify-center rounded-full ${isDark ? 'bg-slate-800' : 'bg-white shadow-sm'}`}
                 >
-                    <Text className={`text-xl ${isDark ? 'text-white' : 'text-slate-700'}`}>←</Text>
+                    <Icon name="arrow-left" size={24} color={isDark ? '#FFF' : '#334155'} />
                 </TouchableOpacity>
                 <Text className={`ml-4 text-xl font-bold ${isDark ? 'text-white' : 'text-slate-700'}`}>
                     Help & Support
@@ -85,8 +91,8 @@ export default function HelpScreen({ onBack, isDark }: HelpScreenProps) {
                             activeOpacity={0.7}
                         >
                             <View className="flex-row items-center flex-1 pr-4">
-                                <View className={`h-8 w-8 items-center justify-center rounded-full mr-3 ${isDark ? 'bg-slate-700' : 'bg-purple-50'}`}>
-                                    <Icon name={faq.icon} size={16} color={isDark ? '#a78bfa' : '#8b5cf6'} />
+                                <View className={`h-8 w-8 items-center justify-center rounded-full mr-3 ${isDark ? 'bg-slate-700' : 'bg-primary/10'}`}>
+                                    <Icon name={faq.icon} size={16} color={isDark ? '#8b56fc' : '#8b56fc'} />
                                 </View>
                                 <Text className={`text-base font-semibold ${isDark ? 'text-white' : 'text-slate-700'}`}>
                                     {faq.question}
@@ -111,11 +117,11 @@ export default function HelpScreen({ onBack, isDark }: HelpScreenProps) {
                 ))}
 
                 {/* Additional Help Contact (Optional presentation) */}
-                <View className={`mt-4 mb-10 rounded-xl p-6 ${isDark ? 'bg-purple-900/20' : 'bg-purple-50'}`}>
-                    <Text className={`mb-2 text-center font-semibold ${isDark ? 'text-purple-200' : 'text-purple-700'}`}>
+                <View className={`mt-4 mb-10 rounded-xl p-6 ${isDark ? 'bg-primary/20' : 'bg-primary/10'}`}>
+                    <Text className={`mb-2 text-center font-semibold ${isDark ? 'text-primary' : 'text-primary'}`}>
                         Still need help?
                     </Text>
-                    <Text className={`text-center text-sm ${isDark ? 'text-purple-300' : 'text-purple-600'}`}>
+                    <Text className={`text-center text-sm ${isDark ? 'text-primary' : 'text-primary'}`}>
                         Contact us at studio.lighty@gmail.com
                     </Text>
                 </View>

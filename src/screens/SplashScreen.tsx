@@ -42,8 +42,8 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
   return (
     <View className="flex-1 items-center justify-center bg-gray-50">
       {/* Background decorations */}
-      <View className="absolute top-0 right-0 h-64 w-64 -mr-32 -mt-32 rounded-full bg-purple-100 opacity-50" />
-      <View className="absolute bottom-0 left-0 h-80 w-80 -ml-40 -mb-40 rounded-full bg-purple-100 opacity-50" />
+      <View className="absolute top-0 right-0 h-64 w-64 -mr-32 -mt-32 rounded-full bg-primary/20 opacity-50" />
+      <View className="absolute bottom-0 left-0 h-80 w-80 -ml-40 -mb-40 rounded-full bg-primary/20 opacity-50" />
 
       {/* Main Content */}
       <View className="items-center z-10">
@@ -71,7 +71,7 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
           className="items-center"
         >
           <Text className="text-5xl font-bold text-slate-800 tracking-wider">
-            Hab<Text className="text-purple-600">ik</Text>
+            Hab<Text className="text-primary">ik</Text>
           </Text>
           <Text className="mt-3 text-lg font-medium text-slate-500 tracking-wide">
             Build Better Habits
@@ -85,9 +85,9 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
           style={{ opacity: fadeAnim }}
           className="flex-row items-center space-x-2"
         >
-          <View className="h-1.5 w-1.5 rounded-full bg-purple-400" />
-          <View className="h-1.5 w-1.5 rounded-full bg-purple-600" />
-          <View className="h-1.5 w-1.5 rounded-full bg-purple-400" />
+          <View className="h-1.5 w-1.5 rounded-full bg-primary" />
+          <View className="h-1.5 w-1.5 rounded-full bg-primary" />
+          <View className="h-1.5 w-1.5 rounded-full bg-primary" />
         </Animated.View>
       </View>
     </View>

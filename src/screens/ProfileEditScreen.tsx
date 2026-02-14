@@ -12,6 +12,7 @@ import {
     PermissionsAndroid,
 } from "react-native";
 import { launchImageLibrary, launchCamera, ImagePickerResponse } from "react-native-image-picker";
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { UserProfile } from "../../App";
 
 interface ProfileEditScreenProps {
@@ -140,7 +141,7 @@ export default function ProfileEditScreen({
     };
 
     return (
-        <View className={`flex-1 ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}>
+        <View className={`flex-1 ${isDark ? 'bg-[#0f0f11]' : 'bg-gray-50'}`}>
             <KeyboardAvoidingView
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 className="flex-1"
@@ -154,18 +155,18 @@ export default function ProfileEditScreen({
                     <View className="flex-row items-center px-6 pt-6 pb-4">
                         <TouchableOpacity
                             onPress={onBack}
-                            className={`h-10 w-10 items-center justify-center rounded-full ${isDark ? 'bg-slate-800' : 'bg-white shadow-sm'}`}
+                            className={`h-10 w-10 items-center justify-center rounded-full ${isDark ? 'bg-[#1e1e20]' : 'bg-white shadow-sm'}`}
                         >
-                            <Text className={`text-xl ${isDark ? 'text-white' : 'text-slate-700'}`}>←</Text>
+                            <Icon name="arrow-left" size={24} color={isDark ? '#FFF' : '#334155'} />
                         </TouchableOpacity>
-                        <Text className={`ml-4 text-xl font-bold ${isDark ? 'text-white' : 'text-slate-700'}`}>
+                        <Text className={`ml-4 text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
                             Edit Profile
                         </Text>
                     </View>
 
                     {/* Avatar Section */}
                     <View className="items-center py-6">
-                        <View className="h-24 w-24 items-center justify-center rounded-full border-3 border-purple-400 bg-purple-500/20 overflow-hidden">
+                        <View className="h-24 w-24 items-center justify-center rounded-full border-3 border-primary bg-primary/20 overflow-hidden">
                             {profileImage ? (
                                 <Image
                                     source={{ uri: profileImage }}
@@ -173,11 +174,11 @@ export default function ProfileEditScreen({
                                     resizeMode="cover"
                                 />
                             ) : (
-                                <Text className="text-4xl">👤</Text>
+                                <Icon name="account" size={48} color={isDark ? '#FFF' : '#334155'} />
                             )}
                         </View>
                         <TouchableOpacity className="mt-3" onPress={handleChangePhoto}>
-                            <Text className="text-purple-500 font-semibold">Change Photo</Text>
+                            <Text className="text-primary font-semibold">Change Photo</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -246,8 +247,8 @@ export default function ProfileEditScreen({
                             onPress={handleSave}
                             disabled={!canSave}
                             className={`rounded-xl py-4 ${canSave
-                                ? 'bg-purple-500'
-                                : isDark ? 'bg-slate-700' : 'bg-gray-200'
+                                ? 'bg-[#8b56fc]'
+                                : isDark ? 'bg-[#1e1e20]' : 'bg-gray-200'
                                 }`}
                         >
                             <Text

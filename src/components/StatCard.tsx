@@ -25,11 +25,11 @@ const colorClasses = {
         text: "text-emerald-500",
     },
     purple: {
-        bgDark: "bg-purple-900/50",
-        bgLight: "bg-purple-100",
-        borderDark: "border-purple-700/50",
-        borderLight: "border-purple-200",
-        text: "text-purple-500",
+        bgDark: "bg-primary/20",
+        bgLight: "bg-primary/10",
+        borderDark: "border-primary/50",
+        borderLight: "border-primary/30",
+        text: "text-primary",
     },
     amber: {
         bgDark: "bg-amber-900/50",

@@ -1,45 +1,71 @@
 import React from "react";
 import { View, TouchableOpacity, Text } from "react-native";
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface BottomTabNavigationProps {
   activeTab: "home" | "statistics" | "journey" | "profile";
   onTabChange: (tab: "home" | "statistics" | "journey" | "profile") => void;
+  onAddHabit: () => void;
   isDark?: boolean;
 }
 
 export default function BottomTabNavigation({
   activeTab,
   onTabChange,
+  onAddHabit,
   isDark = true,
 }: BottomTabNavigationProps) {
   const tabs = [
-    { id: "home", label: "Home", icon: "🏠" },
-    { id: "statistics", label: "Statistics", icon: "📊" },
-    { id: "journey", label: "Journey", icon: "🎯" },
-    { id: "profile", label: "Profile", icon: "👤" },
+    { id: "home", label: "Home", icon: "home" },
+    { id: "statistics", label: "Statistics", icon: "chart-bar" },
+    // Placeholder for spacing
+    { id: "add", label: "", icon: "plus", isAction: true },
+    { id: "journey", label: "Journey", icon: "map-marker-path" },
+    { id: "profile", label: "Profile", icon: "account" },
   ];
 
   return (
-    <View className={`border-t px-4 py-2 ${isDark ? 'border-slate-700 bg-slate-900/95' : 'border-gray-200 bg-white'}`}>
-      <View className="flex-row items-center justify-around">
-        {tabs.map((tab) => (
-          <TouchableOpacity
-            key={tab.id}
-            onPress={() => onTabChange(tab.id as any)}
-            className={`flex-1 items-center py-3 ${activeTab === tab.id ? "border-b-2 border-blue-400" : ""
-              }`}
-          >
-            <Text className="text-2xl">{tab.icon}</Text>
-            <Text
-              className={`text-xs font-semibold ${activeTab === tab.id
-                  ? "text-blue-400"
-                  : isDark ? "text-gray-400" : "text-gray-500"
+    <View className={`border-t pb-2 pt-2 ${isDark ? 'border-[#0f0f11] bg-[#0f0f11]' : 'border-gray-200 bg-white'}`}>
+      <View className="flex-row items-end justify-between px-2">
+        {tabs.map((tab) => {
+          if (tab.isAction) {
+            return (
+              <View key="add-button" className="items-center -mt-8" style={{ width: '20%' }}>
+                <TouchableOpacity
+                  onPress={onAddHabit}
+                  className="h-16 w-16 bg-[#8b56fc] rounded-full items-center justify-center shadow-lg shadow-purple-500/50 mb-1"
+                >
+                  <Icon name="plus" size={32} color="#FFFFFF" />
+                </TouchableOpacity>
+                <Text className="text-xs font-semibold text-gray-500 opacity-0">Create</Text>
+              </View>
+            );
+          }
+
+          return (
+            <TouchableOpacity
+              key={tab.id}
+              onPress={() => onTabChange(tab.id as any)}
+              style={{ width: '20%' }}
+              className={`items-center py-2 ${activeTab === tab.id ? "" : ""
                 }`}
             >
-              {tab.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
+              <Icon
+                name={tab.icon}
+                size={24}
+                color={activeTab === tab.id ? "#8b56fc" : isDark ? "#9ca3af" : "#6b7280"}
+              />
+              <Text
+                className={`text-xs font-semibold mt-1 ${activeTab === tab.id
+                  ? "text-[#8b56fc]"
+                  : isDark ? "text-gray-400" : "text-gray-500"
+                  }`}
+              >
+                {tab.label}
+              </Text>
+            </TouchableOpacity>
+          )
+        })}
       </View>
     </View>
   );

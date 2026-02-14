@@ -41,6 +41,7 @@ export interface UserProfile {
   name: string;
   dob: string;
   profileImage?: string;
+  joinedDate?: string;
 }
 
 // Habit history: date string (YYYY-MM-DD) -> array of completed habit IDs
@@ -180,15 +181,90 @@ export default function App() {
     });
   }, []);
 
-  const addHabit = useCallback((habit: { name: string; icon: string }) => {
+  const addHabit = useCallback(async (habitData: {
+    name: string;
+    icon: string;
+    frequency: string;
+    motivation: string;
+    reminderTime: string;
+    reminderEnabled: boolean;
+    recurring: boolean;
+    interval?: number;
+  }) => {
     const newHabit: Habit = {
       id: Date.now(),
-      name: habit.name,
-      icon: habit.icon,
+      name: habitData.name,
+      icon: habitData.icon,
       completed: false,
+      notification: {
+        enabled: habitData.reminderEnabled,
+        reminderTime: habitData.reminderTime,
+        recurring: habitData.recurring,
+        intervalMinutes: habitData.interval || 60,
+      }
     };
+
     setHabits((prev) => [...prev, newHabit]);
+
+    // Schedule notification if enabled
+    if (newHabit.notification?.enabled) {
+      await scheduleHabitNotification(newHabit, newHabit.notification);
+    }
   }, []);
+
+  const updateHabit = useCallback(async (id: number, updates: Partial<Habit> & {
+    frequency?: string;
+    motivation?: string;
+    reminderTime?: string;
+    reminderEnabled?: boolean;
+    recurring?: boolean;
+    interval?: number;
+  }) => {
+    setHabits((prev) => {
+      const existing = prev.find(h => h.id === id);
+      if (!existing) return prev;
+
+      const updatedHabit = {
+        ...existing,
+        ...updates,
+        // Map flat fields to notification object if present in updates
+        notification: (updates.reminderEnabled !== undefined || updates.reminderTime !== undefined) ? {
+          enabled: updates.reminderEnabled ?? existing.notification?.enabled ?? false,
+          reminderTime: updates.reminderTime ?? existing.notification?.reminderTime ?? "09:00",
+          recurring: updates.recurring ?? existing.notification?.recurring ?? false,
+          intervalMinutes: updates.interval ?? existing.notification?.intervalMinutes ?? 60,
+        } : existing.notification
+      };
+
+      // Handle side effects (notifications) outside the state setter if possible, 
+      // but here we just need to know the new state to schedule.
+      // We'll schedule after state update or do it here if we have the object.
+      // Async in setState is bad, so we'll do it after.
+      return prev.map(h => h.id === id ? updatedHabit : h);
+    });
+
+    // We need to fetch the *latest* habit to schedule effectively, 
+    // or just construct it here.
+    // Let's reconstruct for scheduling:
+    const existing = habits.find(h => h.id === id);
+    if (existing) {
+      const updatedNotification = (updates.reminderEnabled !== undefined) ? {
+        enabled: updates.reminderEnabled,
+        reminderTime: updates.reminderTime ?? existing.notification?.reminderTime ?? "09:00",
+        recurring: updates.recurring ?? existing.notification?.recurring ?? false,
+        intervalMinutes: updates.interval ?? existing.notification?.intervalMinutes ?? 60,
+      } : existing.notification;
+
+      const updatedHabitForSchedule = { ...existing, ...updates, notification: updatedNotification };
+
+      if (updatedNotification?.enabled) {
+        scheduleHabitNotification(updatedHabitForSchedule, updatedNotification);
+      } else {
+        cancelHabitNotification(id);
+      }
+    }
+
+  }, [habits]);
 
   const updateProfile = useCallback((updates: Partial<UserProfile>) => {
     setUserProfile(prev => prev ? { ...prev, ...updates } : null);
@@ -379,6 +455,7 @@ export default function App() {
       <ManageHabitsScreen
         habits={habits}
         onAddHabit={addHabit}
+        onUpdateHabit={updateHabit}
         onDeleteHabit={handleDeleteHabit}
         onEditHabit={handleEditHabit}
         onBack={handleBackFromManageHabits}
@@ -390,15 +467,17 @@ export default function App() {
   return (
     <ErrorBoundary>
       <View className={`flex-1 ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}>
-        {activeTab === "statistics" && (
+        <View style={{ display: activeTab === "statistics" ? 'flex' : 'none', flex: 1 }}>
           <StatisticsScreen habits={habits} habitHistory={habitHistory} theme={theme} isDark={isDark} />
-        )}
-        {activeTab === "journey" && (
+        </View>
+        <View style={{ display: activeTab === "journey" ? 'flex' : 'none', flex: 1 }}>
           <JourneyScreen habits={habits} habitHistory={habitHistory} theme={theme} isDark={isDark} />
-        )}
-        {activeTab === "profile" && (
+        </View>
+        <View style={{ display: activeTab === "profile" ? 'flex' : 'none', flex: 1 }}>
           <ProfileScreen
             userProfile={userProfile}
+            habits={habits}
+            habitHistory={habitHistory}
             onUpdateProfile={updateProfile}
             onManageHabits={handleManageHabits}
             onEditProfile={handleEditProfile}
@@ -409,18 +488,24 @@ export default function App() {
             onToggleTheme={() => setTheme(theme === 'light' ? 'dark' : 'light')}
             isDark={isDark}
           />
-        )}
-        {activeTab === "home" && (
+        </View>
+        <View style={{ display: activeTab === "home" ? 'flex' : 'none', flex: 1 }}>
           <HomeScreen
             habits={habits}
             habitHistory={habitHistory}
             onToggleHabit={toggleHabit}
-            userName={userProfile.name}
+            userName={userProfile?.name || "User"}
+            userProfile={userProfile}
             theme={theme}
             isDark={isDark}
           />
-        )}
-        <BottomTabNavigation activeTab={activeTab} onTabChange={handleTabChange} isDark={isDark} />
+        </View>
+        <BottomTabNavigation
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          onAddHabit={handleManageHabits}
+          isDark={isDark}
+        />
       </View>
     </ErrorBoundary>
   );

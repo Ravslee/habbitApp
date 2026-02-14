@@ -15,7 +15,11 @@ export interface AppData {
 
 // Default empty state
 export const DEFAULT_APP_DATA: AppData = {
-    userProfile: null,
+    userProfile: {
+        name: '',
+        dob: '',
+        joinedDate: new Date().toISOString().split('T')[0], // Default joined date for new users
+    },
     habits: [],
     habitHistory: {},
     theme: 'dark',
@@ -62,9 +66,18 @@ export async function loadAppData(): Promise<AppData> {
             }
 
             // Handle migrations if needed based on version
+            let userProfile = data.userProfile;
+            if (userProfile && !userProfile.joinedDate) {
+                userProfile = {
+                    ...userProfile,
+                    joinedDate: getTodayDate(),
+                };
+            }
+
             return {
                 ...DEFAULT_APP_DATA,
                 ...data,
+                userProfile,
                 habits,
                 lastActiveDate: today,
             };

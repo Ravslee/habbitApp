@@ -4,28 +4,31 @@ import notifee, {
     AndroidImportance,
     TimestampTrigger,
     AndroidNotificationSetting,
+    AuthorizationStatus,
 } from '@notifee/react-native';
 import { NotificationSettings, Habit } from '../../App';
 import { Alert, Platform } from 'react-native';
 
+const CHANNEL_ID = 'habit-reminders';
+
 // Create a notification channel for Android (required for Android 8+)
-async function createNotificationChannel() {
+async function ensureChannelExists() {
     const channelId = await notifee.createChannel({
-        id: 'habit-reminders',
+        id: CHANNEL_ID,
         name: 'Habit Reminders',
         description: 'Daily reminders for your habits',
         importance: AndroidImportance.HIGH,
         sound: 'default',
         vibration: true,
     });
-    console.log('Created notification channel:', channelId);
+    // console.log('Verified notification channel:', channelId);
     return channelId;
 }
 
 // Initialize notification service
 export async function initializeNotifications() {
     try {
-        await createNotificationChannel();
+        await ensureChannelExists();
         // Request permissions
         const settings = await notifee.requestPermission();
         console.log('Notification permission status:', settings.authorizationStatus);
@@ -38,11 +41,12 @@ export async function initializeNotifications() {
 // Display an immediate test notification
 export async function showTestNotification(habitName: string) {
     try {
+        await ensureChannelExists();
         await notifee.displayNotification({
             title: `🔔 Test: ${habitName}`,
             body: `This is a test notification. If you see this, notifications are working!`,
             android: {
-                channelId: 'habit-reminders',
+                channelId: CHANNEL_ID,
                 importance: AndroidImportance.HIGH,
                 smallIcon: 'ic_notification',
                 pressAction: {
@@ -68,6 +72,20 @@ export async function scheduleHabitNotification(habit: Habit, settings: Notifica
             return;
         }
 
+        // Check generic notification permission
+        const perms = await notifee.getNotificationSettings();
+        if (perms.authorizationStatus === AuthorizationStatus.DENIED) {
+            Alert.alert(
+                'Notifications Disabled',
+                'Please enable notifications in your system settings to receive reminders.',
+                [
+                    { text: 'Cancel', style: 'cancel' },
+                    { text: 'Settings', onPress: async () => await notifee.openNotificationSettings() }
+                ]
+            );
+            return;
+        }
+
         // Validate reminderTime format
         if (!settings.reminderTime || !/^\d{1,2}:\d{2}$/.test(settings.reminderTime)) {
             console.error('Invalid reminder time format:', settings.reminderTime);
@@ -75,22 +93,24 @@ export async function scheduleHabitNotification(habit: Habit, settings: Notifica
         }
 
         // Check for exact alarm permission on Android 12+ (API 31+)
-        if (Platform.OS === 'android' && Platform.Version >= 31) {
-            const settings = await notifee.getNotificationSettings();
-            if (settings.android.alarm !== AndroidNotificationSetting.ENABLED) {
-                // Show alert and ask to open settings
-                Alert.alert(
-                    'Permission Required',
-                    'To ensure your habit reminders arrive at the exact time, please allow "Alarms & Reminders" permission.',
-                    [
-                        { text: 'Cancel', style: 'cancel' },
-                        {
-                            text: 'Open Settings',
-                            onPress: async () => await notifee.openAlarmPermissionSettings(),
-                        },
-                    ]
-                );
-                return;
+        if (Platform.OS === 'android') {
+            const apiLevel = parseInt(String(Platform.Version), 10);
+            if (apiLevel >= 31) {
+                const settings = await notifee.getNotificationSettings();
+                if (settings.android.alarm !== AndroidNotificationSetting.ENABLED) {
+                    Alert.alert(
+                        'Permission Required',
+                        'To ensure your habit reminders arrive at the exact time, please allow "Alarms & Reminders" permission.',
+                        [
+                            { text: 'Cancel', style: 'cancel' },
+                            {
+                                text: 'Open Settings',
+                                onPress: async () => await notifee.openAlarmPermissionSettings(),
+                            },
+                        ]
+                    );
+                    return;
+                }
             }
         }
 
@@ -108,7 +128,7 @@ export async function scheduleHabitNotification(habit: Habit, settings: Notifica
         triggerDate.setHours(hours, minutes, 0, 0);
 
         // If the time has already passed today, schedule for tomorrow
-        if (triggerDate <= now) {
+        if (triggerDate.getTime() <= now.getTime()) {
             triggerDate.setDate(triggerDate.getDate() + 1);
             console.log('Time already passed, scheduling for tomorrow');
         }
@@ -120,6 +140,8 @@ export async function scheduleHabitNotification(habit: Habit, settings: Notifica
         }
 
         console.log('Scheduling notification for:', triggerDate.toLocaleString());
+
+        await ensureChannelExists();
 
         // Create the trigger
         const trigger: TimestampTrigger = {
@@ -138,7 +160,7 @@ export async function scheduleHabitNotification(habit: Habit, settings: Notifica
                 title: `⏰ Time for: ${habit.name}`,
                 body: `Don't forget to complete your "${habit.name}" habit today! ${habit.icon || ''}`,
                 android: {
-                    channelId: 'habit-reminders',
+                    channelId: CHANNEL_ID,
                     importance: AndroidImportance.HIGH,
                     smallIcon: 'ic_notification',
                     pressAction: {
@@ -159,7 +181,7 @@ export async function scheduleHabitNotification(habit: Habit, settings: Notifica
             title: `✅ Reminder Set: ${habit.name}`,
             body: `You'll be reminded daily at ${formatTime12Hour(settings.reminderTime)}`,
             android: {
-                channelId: 'habit-reminders',
+                channelId: CHANNEL_ID,
                 importance: AndroidImportance.DEFAULT,
                 smallIcon: 'ic_notification',
                 pressAction: {
@@ -206,17 +228,28 @@ async function scheduleRecurringNotifications(
     startTime: Date
 ) {
     const intervalMs = settings.intervalMinutes * 60 * 1000;
+
+    // Calculate end of the day for the SAME day as startTime
     const endOfDay = new Date(startTime);
     endOfDay.setHours(22, 0, 0, 0); // Stop reminders at 10 PM
+
+    // If startTime is AFTER 10 PM, do not schedule any recurring for that day
+    if (startTime.getTime() >= endOfDay.getTime()) {
+        return;
+    }
 
     let nextTime = new Date(startTime.getTime() + intervalMs);
     let index = 1;
 
-    while (nextTime < endOfDay && index < 10) {
+    // Safety limit: 100 notifications max (covers ~24h at 15m intervals)
+    while (nextTime < endOfDay && index < 100) {
         const trigger: TimestampTrigger = {
             type: TriggerType.TIMESTAMP,
             timestamp: nextTime.getTime(),
             repeatFrequency: RepeatFrequency.DAILY,
+            alarmManager: {
+                allowWhileIdle: true,
+            }
         };
 
         await notifee.createTriggerNotification(
@@ -225,7 +258,7 @@ async function scheduleRecurringNotifications(
                 title: `🔔 Reminder: ${habit.name}`,
                 body: `Quick reminder to check on your "${habit.name}" habit! ${habit.icon}`,
                 android: {
-                    channelId: 'habit-reminders',
+                    channelId: CHANNEL_ID,
                     importance: AndroidImportance.HIGH,
                     smallIcon: 'ic_notification',
                     pressAction: {
@@ -250,9 +283,11 @@ async function scheduleRecurringNotifications(
 export async function cancelHabitNotification(habitId: number) {
     try {
         await notifee.cancelNotification(`habit-${habitId}`);
-        for (let i = 1; i < 10; i++) {
-            await notifee.cancelNotification(`habit-${habitId}-recurring-${i}`);
+        const promises = [];
+        for (let i = 1; i < 100; i++) {
+            promises.push(notifee.cancelNotification(`habit-${habitId}-recurring-${i}`));
         }
+        await Promise.all(promises);
         console.log('Cancelled notifications for habit', habitId);
     } catch (error) {
         console.error('Error cancelling notification:', error);

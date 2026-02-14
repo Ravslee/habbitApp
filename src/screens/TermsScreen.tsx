@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, ScrollView, TouchableOpacity, Linking } from "react-native";
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface TermsScreenProps {
     onBack: () => void;
@@ -58,7 +59,7 @@ export default function TermsScreen({ onBack, isDark }: TermsScreenProps) {
                     onPress={onBack}
                     className={`h-10 w-10 items-center justify-center rounded-full ${isDark ? 'bg-slate-800' : 'bg-white shadow-sm'}`}
                 >
-                    <Text className={`text-xl ${isDark ? 'text-white' : 'text-slate-700'}`}>←</Text>
+                    <Icon name="arrow-left" size={24} color={isDark ? '#FFF' : '#334155'} />
                 </TouchableOpacity>
                 <Text className={`ml-4 text-xl font-bold ${isDark ? 'text-white' : 'text-slate-700'}`}>
                     Terms and Conditions
@@ -93,7 +94,7 @@ export default function TermsScreen({ onBack, isDark }: TermsScreenProps) {
                 ))}
 
                 {/* Footer */}
-                <View className={`mt-6 rounded-lg p-4 ${isDark ? 'bg-slate-800' : 'bg-purple-50'}`}>
+                <View className={`mt-6 rounded-lg p-4 ${isDark ? 'bg-slate-800' : 'bg-primary/10'}`}>
                     <Text className={`text-center text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                         By using Habik, you acknowledge that you have read and understood these Terms and Conditions.
                     </Text>
@@ -104,7 +105,7 @@ export default function TermsScreen({ onBack, isDark }: TermsScreenProps) {
                     onPress={() => Linking.openURL('https://lightapps.co/privacy')}
                     className="mt-4 mb-8 items-center"
                 >
-                    <Text className={`text-sm font-bold underline ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>
+                    <Text className={`text-sm font-bold underline ${isDark ? 'text-primary' : 'text-primary'}`}>
                         View Privacy Policy
                     </Text>
                 </TouchableOpacity>

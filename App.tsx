@@ -1,6 +1,6 @@
 import "./global.css"
 import { useState, useEffect, useCallback, useRef } from "react";
-import { View, BackHandler } from "react-native";
+import { View, BackHandler, StatusBar } from "react-native";
 import SplashScreen from "./src/screens/SplashScreen";
 import OnboardingScreen from "./src/screens/OnboardingScreen";
 import HomeScreen from "./src/screens/HomeScreen";
@@ -19,6 +19,7 @@ import { loadAppData, saveAppData, AppData } from "./src/utils/storage";
 import { ThemeMode } from "./src/context/ThemeContext";
 import { initializeNotifications, scheduleHabitNotification, cancelHabitNotification } from "./src/services/notificationService";
 import mobileAds from 'react-native-google-mobile-ads';
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 type Tab = "home" | "statistics" | "journey" | "profile";
 
@@ -469,50 +470,58 @@ export default function App() {
   }
 
   return (
-    <ErrorBoundary>
-      <View className={`flex-1 ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}>
-        <View style={{ display: activeTab === "statistics" ? 'flex' : 'none', flex: 1 }}>
-          <StatisticsScreen habits={habits} habitHistory={habitHistory} theme={theme} isDark={isDark} isVisible={activeTab === "statistics"} />
-        </View>
-        <View style={{ display: activeTab === "journey" ? 'flex' : 'none', flex: 1 }}>
-          <JourneyScreen habits={habits} habitHistory={habitHistory} theme={theme} isDark={isDark} isVisible={activeTab === "journey"} />
-        </View>
-        <View style={{ display: activeTab === "profile" ? 'flex' : 'none', flex: 1 }}>
-          <ProfileScreen
-            userProfile={userProfile}
-            habits={habits}
-            habitHistory={habitHistory}
-            onUpdateProfile={updateProfile}
-            onManageHabits={handleManageHabits}
-            onEditProfile={handleEditProfile}
-            onShowTerms={handleShowTerms}
-            onShowAbout={handleShowAbout}
-            onShowHelp={handleShowHelp}
-            theme={theme}
-            onToggleTheme={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+    <SafeAreaProvider>
+      <ErrorBoundary>
+        <View className={`flex-1 ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}>
+          <StatusBar
+            translucent
+            backgroundColor="transparent"
+            barStyle={isDark ? 'light-content' : 'dark-content'}
+          />
+          <View style={{ display: activeTab === "statistics" ? 'flex' : 'none', flex: 1 }}>
+            <StatisticsScreen habits={habits} habitHistory={habitHistory} theme={theme} isDark={isDark} isVisible={activeTab === "statistics"} />
+          </View>
+          <View style={{ display: activeTab === "journey" ? 'flex' : 'none', flex: 1 }}>
+            <JourneyScreen habits={habits} habitHistory={habitHistory} theme={theme} isDark={isDark} isVisible={activeTab === "journey"} />
+          </View>
+          <View style={{ display: activeTab === "profile" ? 'flex' : 'none', flex: 1 }}>
+            <ProfileScreen
+              userProfile={userProfile}
+              habits={habits}
+              habitHistory={habitHistory}
+              onUpdateProfile={updateProfile}
+              onManageHabits={handleManageHabits}
+              onEditProfile={handleEditProfile}
+              onShowTerms={handleShowTerms}
+              onShowAbout={handleShowAbout}
+              onShowHelp={handleShowHelp}
+              theme={theme}
+              onToggleTheme={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+              isDark={isDark}
+              isVisible={activeTab === "profile"}
+            />
+          </View>
+          <View style={{ display: activeTab === "home" ? 'flex' : 'none', flex: 1 }}>
+            <HomeScreen
+              habits={habits}
+              habitHistory={habitHistory}
+              onToggleHabit={toggleHabit}
+              userName={userProfile?.name || "User"}
+              userProfile={userProfile}
+              theme={theme}
+              isDark={isDark}
+              isVisible={activeTab === "home"}
+            />
+          </View>
+          <BottomTabNavigation
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
+            onAddHabit={handleManageHabits}
             isDark={isDark}
-            isVisible={activeTab === "profile"}
           />
         </View>
-        <View style={{ display: activeTab === "home" ? 'flex' : 'none', flex: 1 }}>
-          <HomeScreen
-            habits={habits}
-            habitHistory={habitHistory}
-            onToggleHabit={toggleHabit}
-            userName={userProfile?.name || "User"}
-            userProfile={userProfile}
-            theme={theme}
-            isDark={isDark}
-            isVisible={activeTab === "home"}
-          />
-        </View>
-        <BottomTabNavigation
-          activeTab={activeTab}
-          onTabChange={handleTabChange}
-          onAddHabit={handleManageHabits}
-          isDark={isDark}
-        />
-      </View>
-    </ErrorBoundary>
+      </ErrorBoundary>
+    </SafeAreaProvider>
+
   );
 }

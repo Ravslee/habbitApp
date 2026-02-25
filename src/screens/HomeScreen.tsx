@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, Image, TouchableOpacity, Dimensions } from "react-native";
+import { View, Text, ScrollView, Image, Dimensions } from "react-native";
 import CircularProgress from "../components/CircularProgress";
 import HabitCard from "../components/HabitCard";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -7,6 +7,7 @@ import { Habit, HabitHistory, UserProfile } from "../../App";
 import AdBanner from "../components/AdBanner";
 import { calculateStreak } from "../utils/streak";
 import { ThemeMode } from "../context/ThemeContext";
+import { screenPropsAreEqual } from "../utils/memoization";
 
 const { width } = Dimensions.get('window');
 
@@ -18,9 +19,11 @@ interface HomeScreenProps {
   userProfile: UserProfile | null;
   theme: ThemeMode;
   isDark: boolean;
+  isVisible: boolean;
 }
 
-export default function HomeScreen({ habits, habitHistory, onToggleHabit, userName, userProfile, theme, isDark }: HomeScreenProps) {
+function HomeScreen({ habits, habitHistory, onToggleHabit, userName, userProfile, theme, isDark, isVisible }: HomeScreenProps) {
+
   // Date Formatting for Header
   const today = new Date();
   const formattedDate = today.toLocaleDateString('en-US', {
@@ -90,8 +93,8 @@ export default function HomeScreen({ habits, habitHistory, onToggleHabit, userNa
         <View className="flex-row items-center justify-between px-6 mb-4">
           <Text className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Today</Text>
           {/* <TouchableOpacity className={`px-4 py-1.5 rounded-full ${isDark ? 'bg-[#1e1e20]' : 'bg-gray-200'}`}>
-            <Text className="text-xs font-bold text-primary">EDIT</Text>
-          </TouchableOpacity> */}
+              <Text className="text-xs font-bold text-primary">EDIT</Text>
+            </TouchableOpacity> */}
         </View>
 
         {/* HABIT LIST */}
@@ -115,11 +118,14 @@ export default function HomeScreen({ habits, habitHistory, onToggleHabit, userNa
           )}
         </View>
 
-        <View className="pb-6">
-          <AdBanner isDark={isDark} />
-        </View>
+
 
       </ScrollView>
-    </View>
+      <View className="pb-6">
+        <AdBanner isDark={isDark} shouldLoad={isVisible} />
+      </View>
+    </View >
   );
 }
+
+export default React.memo(HomeScreen, screenPropsAreEqual);

@@ -11,11 +11,12 @@ interface StatisticsScreenProps {
   habitHistory: HabitHistory;
   theme: ThemeMode;
   isDark: boolean;
+  isVisible: boolean;
 }
 
 const { width } = Dimensions.get('window');
 
-export default function StatisticsScreen({ habits, habitHistory, theme, isDark }: StatisticsScreenProps) {
+export default function StatisticsScreen({ habits, habitHistory, theme, isDark, isVisible }: StatisticsScreenProps) {
   // Calculate statistics
   const stats = useMemo(() => {
     const today = new Date();

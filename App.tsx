@@ -144,8 +144,12 @@ export default function App() {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleOnboardingComplete = useCallback((profile: UserProfile) => {
-    setUserProfile(profile);
+  const handleOnboardingComplete = useCallback((profile: { name: string; dob: string }) => {
+    const fullProfile: UserProfile = {
+      ...profile,
+      joinedDate: new Date().toISOString().split('T')[0],
+    };
+    setUserProfile(fullProfile);
   }, []);
 
   // Theme change handler removed - light theme is now permanent
@@ -390,8 +394,8 @@ export default function App() {
     return <SplashScreen />;
   }
 
-  // Show onboarding if user hasn't completed it
-  if (!userProfile) {
+  // Show Onboarding if user hasn't completed it (null profile OR empty name)
+  if (!userProfile || !userProfile.name) {
     return <OnboardingScreen onComplete={handleOnboardingComplete} />;
   }
 
@@ -468,10 +472,10 @@ export default function App() {
     <ErrorBoundary>
       <View className={`flex-1 ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}>
         <View style={{ display: activeTab === "statistics" ? 'flex' : 'none', flex: 1 }}>
-          <StatisticsScreen habits={habits} habitHistory={habitHistory} theme={theme} isDark={isDark} />
+          <StatisticsScreen habits={habits} habitHistory={habitHistory} theme={theme} isDark={isDark} isVisible={activeTab === "statistics"} />
         </View>
         <View style={{ display: activeTab === "journey" ? 'flex' : 'none', flex: 1 }}>
-          <JourneyScreen habits={habits} habitHistory={habitHistory} theme={theme} isDark={isDark} />
+          <JourneyScreen habits={habits} habitHistory={habitHistory} theme={theme} isDark={isDark} isVisible={activeTab === "journey"} />
         </View>
         <View style={{ display: activeTab === "profile" ? 'flex' : 'none', flex: 1 }}>
           <ProfileScreen
@@ -487,6 +491,7 @@ export default function App() {
             theme={theme}
             onToggleTheme={() => setTheme(theme === 'light' ? 'dark' : 'light')}
             isDark={isDark}
+            isVisible={activeTab === "profile"}
           />
         </View>
         <View style={{ display: activeTab === "home" ? 'flex' : 'none', flex: 1 }}>
@@ -498,6 +503,7 @@ export default function App() {
             userProfile={userProfile}
             theme={theme}
             isDark={isDark}
+            isVisible={activeTab === "home"}
           />
         </View>
         <BottomTabNavigation

@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { UserProfile, HabitHistory, Habit } from "../../App";
 import { ThemeMode } from "../context/ThemeContext";
 import AdBanner from "../components/AdBanner";
+import { screenPropsAreEqual } from "../utils/memoization";
 
 interface ProfileScreenProps {
   userProfile: UserProfile;
@@ -18,9 +19,53 @@ interface ProfileScreenProps {
   theme: ThemeMode;
   onToggleTheme: () => void;
   isDark: boolean;
+  isVisible: boolean;
 }
 
-export default function ProfileScreen({
+// Sub-components defined outside to avoid re-creation
+const SectionHeader = ({ title }: { title: string }) => (
+  <Text className="text-gray-500 text-xs font-bold tracking-widest uppercase mb-3 mt-6 ml-1">
+    {title}
+  </Text>
+);
+
+const SettingItem = ({
+  icon,
+  title,
+  subtitle,
+  onPress,
+  rightElement,
+  color = "#8b56fc",
+  isDark
+}: {
+  icon: string,
+  title: string,
+  subtitle?: string,
+  onPress?: () => void,
+  rightElement?: React.ReactNode,
+  color?: string,
+  isDark: boolean
+}) => (
+  <TouchableOpacity
+    activeOpacity={0.7}
+    onPress={onPress}
+    disabled={!onPress}
+    className="flex-row items-center justify-between p-4"
+  >
+    <View className="flex-row items-center flex-1">
+      <View className="w-10 h-10 rounded-full items-center justify-center mr-4" style={{ backgroundColor: `${color}20` }}>
+        <Icon name={icon} size={20} color={color} />
+      </View>
+      <View className="flex-1">
+        <Text className={`font-medium text-base ${isDark ? 'text-white' : 'text-gray-900'}`}>{title}</Text>
+        {subtitle && <Text className="text-gray-500 text-xs mt-0.5">{subtitle}</Text>}
+      </View>
+    </View>
+    {rightElement || <Icon name="chevron-right" size={20} color={isDark ? "#4b5563" : "#9ca3af"} />}
+  </TouchableOpacity>
+);
+
+function ProfileScreen({
   userProfile,
   habits,
   habitHistory,
@@ -33,6 +78,7 @@ export default function ProfileScreen({
   theme,
   onToggleTheme,
   isDark,
+  isVisible,
 }: ProfileScreenProps) {
 
   // Open system notification settings
@@ -44,74 +90,17 @@ export default function ProfileScreen({
     }
   };
 
-  // Calculate generic stats for the UI
-  const stats = useMemo(() => {
-    const allDates = Object.keys(habitHistory);
-    const totalCompleted = allDates.reduce((sum, date) => sum + habitHistory[date].length, 0);
-
-    // Points logic: 10 points per habit
-    const points = totalCompleted * 10;
-
-    // Level logic: 1 level per 50 habits
-    const level = Math.floor(totalCompleted / 50) + 1;
-
-    return { points, level };
-  }, [habitHistory]);
-
-  const joinDate = userProfile.joinedDate ? new Date(userProfile.joinedDate).toLocaleDateString('en-US', {
-    month: 'long',
-    year: 'numeric'
-  }) : 'June 2023';
-
-  const SectionHeader = ({ title }: { title: string }) => (
-    <Text className="text-gray-500 text-xs font-bold tracking-widest uppercase mb-3 mt-6 ml-1">
-      {title}
-    </Text>
-  );
-
-  const SettingItem = ({
-    icon,
-    title,
-    subtitle,
-    onPress,
-    rightElement,
-    color = "#8b56fc"
-  }: {
-    icon: string,
-    title: string,
-    subtitle?: string,
-    onPress?: () => void,
-    rightElement?: React.ReactNode,
-    color?: string
-  }) => (
-    <TouchableOpacity
-      activeOpacity={0.7}
-      onPress={onPress}
-      disabled={!onPress}
-      className="flex-row items-center justify-between p-4"
-    >
-      <View className="flex-row items-center flex-1">
-        <View className="w-10 h-10 rounded-full items-center justify-center mr-4" style={{ backgroundColor: `${color}20` }}>
-          <Icon name={icon} size={20} color={color} />
-        </View>
-        <View className="flex-1">
-          <Text className={`font-medium text-base ${isDark ? 'text-white' : 'text-gray-900'}`}>{title}</Text>
-          {subtitle && <Text className="text-gray-500 text-xs mt-0.5">{subtitle}</Text>}
-        </View>
-      </View>
-      {rightElement || <Icon name="chevron-right" size={20} color={isDark ? "#4b5563" : "#9ca3af"} />}
-    </TouchableOpacity>
-  );
+  // Format joined date
+  const joinDate = useMemo(() => {
+    if (!userProfile.joinedDate) return "recently";
+    return new Date(userProfile.joinedDate).toLocaleDateString('en-US', {
+      month: 'long',
+      year: 'numeric'
+    });
+  }, [userProfile.joinedDate]);
 
   return (
     <View className={`flex-1 ${isDark ? 'bg-[#0f0f11]' : 'bg-gray-50'}`}>
-      {/* Header */}
-      {/* <View className="px-6 pt-6 pb-2 flex-row items-center">
-        <Icon name="chevron-left" size={28} color={isDark ? "#FFF" : "#374151"} />
-        <Text className={`text-xl font-bold flex-1 text-center mr-7 ${isDark ? 'text-white' : 'text-gray-900'}`}>Profile</Text>
-      </View> */}
-
-
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1 px-6  pt-12">
         <View className="mb-8">
           <Text className={`text-3xl font-bold mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>Profile</Text>
@@ -141,18 +130,6 @@ export default function ProfileScreen({
           <Text className="text-gray-500 text-sm">Joined {joinDate}</Text>
         </View>
 
-        {/* Stats Row */}
-        {/* <View className="flex-row justify-between mb-2">
-          <View className="bg-[#1e1e20] rounded-3xl p-5 w-[48%] items-center border border-[#2c2c2e]">
-            <Text className="text-[#8b56fc] text-2xl font-bold mb-1">{stats.points.toLocaleString()}</Text>
-            <Text className="text-gray-500 text-[10px] font-bold tracking-widest uppercase">HABIK POINTS</Text>
-          </View>
-          <View className="bg-[#1e1e20] rounded-3xl p-5 w-[48%] items-center border border-[#2c2c2e]">
-            <Text className="text-[#8b56fc] text-2xl font-bold mb-1"> Lvl {stats.level}</Text>
-            <Text className="text-gray-500 text-[10px] font-bold tracking-widest uppercase">MASTERY LEVEL</Text>
-          </View>
-        </View> */}
-
         {/* PREFERENCES */}
         <SectionHeader title="PREFERENCES" />
         <View className={`rounded-3xl overflow-hidden mb-6 border ${isDark ? 'bg-[#1e1e20] border-[#2c2c2e]' : 'bg-white border-gray-200'}`}>
@@ -169,6 +146,7 @@ export default function ProfileScreen({
                 onValueChange={openNotificationSettings}
               />
             }
+            isDark={isDark}
           />
           <View className={`h-[1px] ml-16 ${isDark ? 'bg-[#2c2c2e]' : 'bg-gray-100'}`} />
 
@@ -178,6 +156,7 @@ export default function ProfileScreen({
             title="Manage Habits"
             subtitle="Add, edit or remove habits"
             onPress={onManageHabits}
+            isDark={isDark}
           />
           <View className={`h-[1px] ml-16 ${isDark ? 'bg-[#2c2c2e]' : 'bg-gray-100'}`} />
 
@@ -188,6 +167,7 @@ export default function ProfileScreen({
             subtitle={isDark ? "Always Dark" : "Always Light"}
             onPress={onToggleTheme}
             color="#6366f1"
+            isDark={isDark}
           />
         </View>
 
@@ -199,6 +179,7 @@ export default function ProfileScreen({
             title="Help Center"
             onPress={onShowHelp}
             color="#ec4899"
+            isDark={isDark}
           />
           <View className={`h-[1px] ml-16 ${isDark ? 'bg-[#2c2c2e]' : 'bg-gray-100'}`} />
 
@@ -207,6 +188,7 @@ export default function ProfileScreen({
             title="Privacy Policy"
             onPress={onShowTerms}
             color="#ec4899"
+            isDark={isDark}
           />
           <View className={`h-[1px] ml-16 ${isDark ? 'bg-[#2c2c2e]' : 'bg-gray-100'}`} />
 
@@ -215,12 +197,23 @@ export default function ProfileScreen({
             title="About Habik"
             onPress={onShowAbout}
             color="#ec4899"
+            isDark={isDark}
           />
         </View>
 
         {/* Bottom Spacing */}
         <View className="h-24" />
       </ScrollView>
+
+      {/* Put Banner inside View if you want it sticky bottom, or inside ScrollView for scrollable. 
+          Usually strictly sticky bottom is better for ads. 
+          Here we use a generic View to hold it. 
+      */}
+      <View className="pb-6">
+        <AdBanner isDark={isDark} shouldLoad={isVisible} />
+      </View>
     </View >
   );
 }
+
+export default React.memo(ProfileScreen, screenPropsAreEqual);

@@ -1,16 +1,17 @@
-import React, { useMemo, useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Dimensions } from "react-native";
+import React, { useState, useMemo } from "react";
+import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Habit, HabitHistory } from "../../App";
-import AchievementBadge from "../components/AchievementBadge";
-import AdBanner from "../components/AdBanner";
 import { ThemeMode } from "../context/ThemeContext";
+import AdBanner from "../components/AdBanner";
+import { screenPropsAreEqual } from "../utils/memoization";
 
 interface JourneyScreenProps {
   habits: Habit[];
   habitHistory: HabitHistory;
   theme: ThemeMode;
   isDark: boolean;
+  isVisible: boolean;
 }
 
 interface Achievement {
@@ -116,7 +117,64 @@ const ACHIEVEMENTS: Achievement[] = [
 
 type Tab = 'streaks' | 'consistency' | 'badges';
 
-export default function JourneyScreen({ habits, habitHistory, theme, isDark }: JourneyScreenProps) {
+// Components outside JourneyScreen to prevent re-renders
+const StreakCard = ({ days, title, subtitle, locked, icon, isDark }: { days: number, title: string, subtitle: string, locked: boolean, icon: string, isDark: boolean }) => (
+  <View className={`p-5 rounded-2xl mb-4 flex-row items-center border ${locked
+    ? (isDark ? 'bg-[#151517] border-[#2c2c2e] opacity-50' : 'bg-gray-100 border-gray-200 opacity-50')
+    : (isDark ? 'bg-[#1e1e20] border-[#2c2c2e]' : 'bg-white border-gray-200')
+    }`}>
+    <View className={`w-12 h-12 rounded-full items-center justify-center mr-4 border ${locked
+      ? (isDark ? 'bg-[#2c2c2e] border-gray-700' : 'bg-gray-200 border-gray-300')
+      : (isDark ? 'bg-[#2c2c2e] border-[#8b56fc]' : 'bg-purple-50 border-[#8b56fc]')
+      }`}>
+      <Icon name={icon} size={24} color={locked ? '#6b7280' : '#8b56fc'} />
+    </View>
+    <View className="flex-1">
+      <View className="flex-row items-baseline mb-1">
+        <Text className={`text-2xl font-bold ${locked ? 'text-gray-500' : (isDark ? 'text-white' : 'text-gray-900')}`}>{days}</Text>
+        <Text className="text-[10px] text-gray-400 ml-2 font-bold tracking-widest uppercase">{title}</Text>
+      </View>
+      <Text className="text-gray-500 text-xs italic">
+        {subtitle}
+      </Text>
+    </View>
+    <View>
+      {locked ? (
+        <Icon name="lock" size={20} color="#6b7280" />
+      ) : (
+        <Icon name="check-circle" size={24} color="#8b56fc" />
+      )}
+    </View>
+  </View>
+);
+
+const AchievementBadge = ({ icon, name, description, unlocked, progress, isDark }: { icon: string, name: string, description: string, unlocked: boolean, progress?: number, isDark: boolean }) => (
+  <View className={`p-4 rounded-3xl mb-4 flex-row items-center border ${unlocked
+    ? (isDark ? 'bg-[#1e1e20] border-[#2c2c2e]' : 'bg-white border-gray-200')
+    : (isDark ? 'bg-[#151517] border-[#2c2c2e] opacity-60' : 'bg-gray-50 border-gray-200 opacity-60')
+    }`}>
+    <View className={`w-14 h-14 rounded-2xl items-center justify-center mr-4 ${unlocked
+      ? (isDark ? 'bg-[#2c2c2e]' : 'bg-purple-50')
+      : (isDark ? 'bg-[#212124]' : 'bg-gray-200')
+      }`}>
+      <Icon name={icon} size={28} color={unlocked ? '#8b56fc' : '#9ca3af'} />
+    </View>
+    <View className="flex-1">
+      <Text className={`text-base font-bold mb-0.5 ${unlocked ? (isDark ? 'text-white' : 'text-gray-900') : 'text-gray-500'}`}>{name}</Text>
+      <Text className="text-gray-500 text-xs leading-4">{description}</Text>
+      {!unlocked && progress !== undefined && (
+        <View className="mt-2 h-1 bg-gray-700 rounded-full overflow-hidden">
+          <View className="h-full bg-[#8b56fc]" style={{ width: `${progress}%` }} />
+        </View>
+      )}
+    </View>
+    {unlocked && (
+      <Icon name="medal" size={20} color="#FFD700" />
+    )}
+  </View>
+);
+
+function JourneyScreen({ habits, habitHistory, theme, isDark, isVisible }: JourneyScreenProps) {
   const [activeTab, setActiveTab] = useState<Tab>('streaks');
 
   // Calculate achievement data from habit history
@@ -151,29 +209,23 @@ export default function JourneyScreen({ habits, habitHistory, theme, isDark }: J
     }
     longestStreak = Math.max(longestStreak, tempStreak);
 
-    // Perfect days & weeks
+    // Perfect days
     const perfectDays = allDates.filter(date => {
       const completed = habitHistory[date].length;
       return completed >= habits.length && habits.length > 0;
     }).length;
 
-    // Perfect Weeks logic (simple estimation: every 7 perfect days = 1 perfect week? 
-    // Or strict calendar weeks? Let's use strict blocks of 7 days back from today)
-    let perfectWeeks = 0;
-    // ... complex logic omitted for brevity, let's estimate based on consistency
-    // Actually, design shows "12 Perfect Weeks". Let's calculate loosely:
-    // A week is perfect if 7 days in a row have > 50% completion? 
-    // Or strictly 100%? Let's go with > 80% consistency for a week.
-    perfectWeeks = Math.floor(perfectDays / 7); // Approx
+    // Perfect Weeks logic (approx)
+    const perfectWeeks = Math.floor(perfectDays / 7);
 
-    // Days on journey (from first completion to now)
+    // Days on journey
     let daysOnJourney = 0;
     if (allDates.length > 0) {
       const firstDateStr = allDates[0];
       const [year, month, day] = firstDateStr.split('-').map(Number);
-      const startDate = new Date(year, month - 1, day); // Local midnight
+      const startDate = new Date(year, month - 1, day);
       const now = new Date();
-      const todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate()); // Local midnight
+      const todayDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const diffTime = todayDate.getTime() - startDate.getTime();
       daysOnJourney = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24))) + 1;
     }
@@ -195,36 +247,6 @@ export default function JourneyScreen({ habits, habitHistory, theme, isDark }: J
   }, [habits, habitHistory]);
 
   const unlockedCount = ACHIEVEMENTS.filter(a => a.check(achievementData)).length;
-
-  const StreakCard = ({ days, title, subtitle, locked, icon }: { days: number, title: string, subtitle: string, locked: boolean, icon: string }) => (
-    <View className={`p-5 rounded-2xl mb-4 flex-row items-center border ${locked
-      ? (isDark ? 'bg-[#151517] border-[#2c2c2e] opacity-50' : 'bg-gray-100 border-gray-200 opacity-50')
-      : (isDark ? 'bg-[#1e1e20] border-[#2c2c2e]' : 'bg-white border-gray-200')
-      }`}>
-      <View className={`w-12 h-12 rounded-full items-center justify-center mr-4 border ${locked
-        ? (isDark ? 'bg-[#2c2c2e] border-gray-700' : 'bg-gray-200 border-gray-300')
-        : (isDark ? 'bg-[#2c2c2e] border-[#8b56fc]' : 'bg-purple-50 border-[#8b56fc]')
-        }`}>
-        <Icon name={icon} size={24} color={locked ? '#6b7280' : '#8b56fc'} />
-      </View>
-      <View className="flex-1">
-        <View className="flex-row items-baseline mb-1">
-          <Text className={`text-2xl font-bold ${locked ? 'text-gray-500' : (isDark ? 'text-white' : 'text-gray-900')}`}>{days}</Text>
-          <Text className="text-[10px] text-gray-400 ml-2 font-bold tracking-widest uppercase">{title}</Text>
-        </View>
-        <Text className="text-gray-500 text-xs italic">
-          {subtitle}
-        </Text>
-      </View>
-      <View>
-        {locked ? (
-          <Icon name="lock" size={20} color="#6b7280" />
-        ) : (
-          <Icon name="check-circle" size={24} color="#8b56fc" />
-        )}
-      </View>
-    </View>
-  );
 
   return (
     <View className={`flex-1 ${isDark ? 'bg-[#0f0f11]' : 'bg-gray-50'}`}>
@@ -278,6 +300,7 @@ export default function JourneyScreen({ habits, habitHistory, theme, isDark }: J
               subtitle='"Rooted in Discipline. You have found your rhythm."'
               locked={achievementData.longestStreak < 30}
               icon="fire"
+              isDark={isDark}
             />
 
             {/* 15 Days - Flow State */}
@@ -287,6 +310,7 @@ export default function JourneyScreen({ habits, habitHistory, theme, isDark }: J
               subtitle='"The current is moving with you now."'
               locked={achievementData.longestStreak < 15}
               icon="waves"
+              isDark={isDark}
             />
 
             {/* 60 Days - The Sentinel */}
@@ -296,6 +320,7 @@ export default function JourneyScreen({ habits, habitHistory, theme, isDark }: J
               subtitle='"24 days remaining to unlock."'
               locked={achievementData.longestStreak < 60}
               icon="pine-tree"
+              isDark={isDark}
             />
           </View>
         )}
@@ -360,10 +385,12 @@ export default function JourneyScreen({ habits, habitHistory, theme, isDark }: J
         {/* Bottom Spacing */}
         <View className="h-24" />
 
-        <View className="pb-6">
-          <AdBanner isDark={isDark} />
-        </View>
       </ScrollView>
+      <View className="pb-6">
+        <AdBanner isDark={isDark} shouldLoad={isVisible} />
+      </View>
     </View>
   );
 }
+
+export default React.memo(JourneyScreen, screenPropsAreEqual);

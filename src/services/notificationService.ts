@@ -32,6 +32,28 @@ export async function initializeNotifications() {
         // Request permissions
         const settings = await notifee.requestPermission();
         console.log('Notification permission status:', settings.authorizationStatus);
+
+        // Check for exact alarm permission on Android 12+ (API 31+)
+        if (Platform.OS === 'android') {
+            const apiLevel = parseInt(String(Platform.Version), 10);
+            if (apiLevel >= 31) {
+                const notifSettings = await notifee.getNotificationSettings();
+                if (notifSettings.android.alarm !== AndroidNotificationSetting.ENABLED) {
+                    Alert.alert(
+                        'Permission Required',
+                        'To ensure your habit reminders arrive at the exact time, please allow "Alarms & Reminders" permission.',
+                        [
+                            { text: 'Cancel', style: 'cancel' },
+                            {
+                                text: 'Open Settings',
+                                onPress: async () => await notifee.openAlarmPermissionSettings(),
+                            },
+                        ]
+                    );
+                }
+            }
+        }
+
         return settings;
     } catch (error) {
         console.error('Error initializing notifications:', error);
@@ -92,27 +114,7 @@ export async function scheduleHabitNotification(habit: Habit, settings: Notifica
             return;
         }
 
-        // Check for exact alarm permission on Android 12+ (API 31+)
-        if (Platform.OS === 'android') {
-            const apiLevel = parseInt(String(Platform.Version), 10);
-            if (apiLevel >= 31) {
-                const settings = await notifee.getNotificationSettings();
-                if (settings.android.alarm !== AndroidNotificationSetting.ENABLED) {
-                    Alert.alert(
-                        'Permission Required',
-                        'To ensure your habit reminders arrive at the exact time, please allow "Alarms & Reminders" permission.',
-                        [
-                            { text: 'Cancel', style: 'cancel' },
-                            {
-                                text: 'Open Settings',
-                                onPress: async () => await notifee.openAlarmPermissionSettings(),
-                            },
-                        ]
-                    );
-                    return;
-                }
-            }
-        }
+
 
         // Parse the reminder time
         const [hours, minutes] = settings.reminderTime.split(':').map(Number);

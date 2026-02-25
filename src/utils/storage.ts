@@ -15,11 +15,7 @@ export interface AppData {
 
 // Default empty state
 export const DEFAULT_APP_DATA: AppData = {
-    userProfile: {
-        name: '',
-        dob: '',
-        joinedDate: new Date().toISOString().split('T')[0], // Default joined date for new users
-    },
+    userProfile: null,
     habits: [],
     habitHistory: {},
     theme: 'dark',

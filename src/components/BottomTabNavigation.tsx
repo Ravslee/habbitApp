@@ -30,7 +30,7 @@ export default function BottomTabNavigation({
 
   return (
     <View>
-      {/* <AdBanner isDark={isDark} shouldLoad={true} /> */}
+      <AdBanner isDark={isDark} shouldLoad={true} />
       <View
         style={{ paddingBottom: Math.max(insets.bottom, 16) }}
         className={`flex-row items-end justify-between px-2 border-t pt-2 ${isDark ? 'border-[#0f0f11] bg-[#0f0f11]' : 'border-gray-200 bg-white'}`}

@@ -1,7 +1,7 @@
 import "./global.css"
 import { useState, useEffect, useCallback, useRef } from "react";
 import { View, BackHandler, StatusBar } from "react-native";
-import SplashScreen from "./src/screens/SplashScreen";
+import BootSplash from "react-native-bootsplash";
 import OnboardingScreen from "./src/screens/OnboardingScreen";
 import HomeScreen from "./src/screens/HomeScreen";
 import StatisticsScreen from "./src/screens/StatisticsScreen";
@@ -19,7 +19,7 @@ import { loadAppData, saveAppData, AppData } from "./src/utils/storage";
 import { ThemeMode } from "./src/context/ThemeContext";
 import { initializeNotifications, scheduleHabitNotification, cancelHabitNotification } from "./src/services/notificationService";
 import mobileAds from 'react-native-google-mobile-ads';
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context";
 
 type Tab = "home" | "statistics" | "journey" | "profile";
 
@@ -51,7 +51,6 @@ export interface HabitHistory {
 }
 
 export default function App() {
-  const [showSplash, setShowSplash] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>("home");
@@ -98,6 +97,7 @@ export default function App() {
         console.error('Error loading app data:', error);
       } finally {
         setIsLoading(false);
+        await BootSplash.hide({ fade: true });
       }
     };
     initializeApp();
@@ -136,14 +136,7 @@ export default function App() {
     };
   }, []);
 
-  // Show splash for 3 seconds
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowSplash(false);
-    }, 3000);
 
-    return () => clearTimeout(timer);
-  }, []);
 
   const handleOnboardingComplete = useCallback((profile: { name: string; dob: string }) => {
     const fullProfile: UserProfile = {
@@ -390,9 +383,10 @@ export default function App() {
     return () => backHandler.remove();
   }, [editingHabit, editingProfile, showTerms, showManageHabits, showAbout, showHelp]);
 
-  // Show splash screen first
-  if (showSplash) {
-    return <SplashScreen />;
+
+
+  if (isLoading) {
+    return null;
   }
 
   // Show Onboarding if user hasn't completed it (null profile OR empty name)
@@ -488,13 +482,14 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <ErrorBoundary>
-        <View className={`flex-1 ${isDark ? 'bg-[#0f0f11]' : 'bg-gray-50'}`}>
+        <View className={`flex-1 ${isDark ? 'bg-[#0f0f11]' : 'bg-gray-50'}`} >
           <StatusBar
             translucent
             backgroundColor="transparent"
             barStyle={isDark ? 'light-content' : 'dark-content'}
           />
-          <View style={{ display: activeTab === "statistics" ? 'flex' : 'none', flex: 1 }}>
+          <View style={{ display: activeTab === "statistics" ? 'flex' : 'none', flex: 1 }}
+          >
             <StatisticsScreen habits={habits} habitHistory={habitHistory} theme={theme} isDark={isDark} isVisible={activeTab === "statistics"} />
           </View>
           <View style={{ display: activeTab === "journey" ? 'flex' : 'none', flex: 1 }}>

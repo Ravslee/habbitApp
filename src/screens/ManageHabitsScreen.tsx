@@ -106,10 +106,12 @@ export default function ManageHabitsScreen({ habits, onAddHabit, onUpdateHabit, 
     };
 
     return (
-        <View className={`flex-1 ${isDark ? 'bg-[#0f0f11]' : 'bg-gray-50'}`}>
+        <View className={`flex-1 ${isDark ? 'bg-[#0f0f11]' : 'bg-gray-50'}`}
+            style={{ paddingTop: Math.max(insets.top, 0) }}
+        >
             <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
                 {/* Header */}
-                <View className="px-6 pt-6 pb-2 flex-row items-center">
+                <View className="px-6 py-6 flex-row items-center">
                     <TouchableOpacity onPress={onBack}>
                         <Icon name="chevron-left" size={28} color={isDark ? "#FFF" : "#374151"} />
                     </TouchableOpacity>

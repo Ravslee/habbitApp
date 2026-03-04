@@ -8,6 +8,7 @@ import AdBanner from "../components/AdBanner";
 import { calculateStreak } from "../utils/streak";
 import { ThemeMode } from "../context/ThemeContext";
 import { screenPropsAreEqual } from "../utils/memoization";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get('window');
 
@@ -36,15 +37,16 @@ function HomeScreen({ habits, habitHistory, onToggleHabit, userName, userProfile
   const completedCount = habits.filter((h) => h.completed).length;
   const totalCount = habits.length;
   const progress = totalCount > 0 ? completedCount / totalCount : 0;
+  const insets = useSafeAreaInsets();
 
   return (
-    <View className={`flex-1 ${isDark ? 'bg-[#0f0f11]' : 'bg-gray-50'}`}>
+    <View className={`flex-1 pt-8 ${isDark ? 'bg-[#0f0f11]' : 'bg-gray-50'}`} style={{ paddingTop: Math.max(insets.top, 0) }}>
       {/* Main Background Color should match the "Dark Mode" aesthetic (Approx #0f0f11 or similar deep black/purple) */}
 
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
 
         {/* HEADER SECTION */}
-        <View className="flex-row justify-between items-start px-6 pt-10 pb-6">
+        <View className="flex-row justify-between items-start px-6 pt-0 pb-6">
           <View>
             <Text className="text-xs font-bold text-primary tracking-widest ">
               {formattedDate}

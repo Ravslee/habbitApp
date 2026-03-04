@@ -63,9 +63,11 @@ export default function HelpScreen({ onBack, isDark }: HelpScreenProps) {
     ];
 
     return (
-        <View className={`flex-1 ${isDark ? 'bg-[#0f0f11]' : 'bg-gray-50'}`}>
+        <View className={`flex-1 ${isDark ? 'bg-[#0f0f11]' : 'bg-gray-50'}`}
+            style={{ paddingTop: Math.max(insets.top, 0) }}
+        >
             {/* Header */}
-            <View className="flex-row items-center px-6 pt-6 pb-4">
+            <View className="flex-row items-center px-6 pt-6 pb-4 ">
                 <TouchableOpacity
                     onPress={onBack}
                     className={`h-10 w-10 items-center justify-center rounded-full ${isDark ? 'bg-[#1e1e20]' : 'bg-white shadow-sm'}`}

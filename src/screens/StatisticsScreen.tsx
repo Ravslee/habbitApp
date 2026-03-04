@@ -6,6 +6,7 @@ import BarChart from "../components/BarChart";
 import AdBanner from "../components/AdBanner";
 import { ThemeMode } from "../context/ThemeContext";
 import { screenPropsAreEqual } from "../utils/memoization";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface StatisticsScreenProps {
   habits: Habit[];
@@ -98,9 +99,13 @@ function StatisticsScreen({ habits, habitHistory, theme, isDark, isVisible }: St
     return days;
   }, [habitHistory]);
 
+  const insets = useSafeAreaInsets();
+
   return (
-    <View className={`flex-1 ${isDark ? 'bg-[#0f0f11]' : 'bg-gray-50'}`}>
-      <ScrollView showsVerticalScrollIndicator={false} className="flex-1 px-6 pt-12">
+    <View className={`flex-1 ${isDark ? 'bg-[#0f0f11]' : 'bg-gray-50'}`}
+      style={{ paddingTop: Math.max(insets.top, 0) }}
+    >
+      <ScrollView showsVerticalScrollIndicator={false} className="flex-1 px-6 pt-0">
 
         {/* Header */}
         <View className="mb-0">

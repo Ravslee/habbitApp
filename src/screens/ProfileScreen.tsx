@@ -5,6 +5,7 @@ import { UserProfile, HabitHistory, Habit } from "../../App";
 import { ThemeMode } from "../context/ThemeContext";
 import AdBanner from "../components/AdBanner";
 import { screenPropsAreEqual } from "../utils/memoization";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface ProfileScreenProps {
   userProfile: UserProfile;
@@ -99,9 +100,13 @@ function ProfileScreen({
     });
   }, [userProfile.joinedDate]);
 
+  const insets = useSafeAreaInsets();
+
   return (
-    <View className={`flex-1 ${isDark ? 'bg-[#0f0f11]' : 'bg-gray-50'}`}>
-      <ScrollView showsVerticalScrollIndicator={false} className="flex-1 px-6  pt-12">
+    <View className={`flex-1 ${isDark ? 'bg-[#0f0f11]' : 'bg-gray-50'}`}
+      style={{ paddingTop: Math.max(insets.top, 0) }}
+    >
+      <ScrollView showsVerticalScrollIndicator={false} className="flex-1 px-6  pt-0">
         <View className="mb-8">
           <Text className={`text-3xl font-bold mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>Profile</Text>
         </View>

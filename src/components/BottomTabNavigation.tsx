@@ -1,6 +1,7 @@
 import React from "react";
 import { View, TouchableOpacity, Text } from "react-native";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AdBanner from "./AdBanner";
 
 interface BottomTabNavigationProps {
@@ -18,17 +19,22 @@ export default function BottomTabNavigation({
 }: BottomTabNavigationProps) {
   const tabs = [
     { id: "home", label: "Home", icon: "home" },
-    { id: "statistics", label: "Statistics", icon: "chart-bar" },
+    { id: "statistics", label: "Stats", icon: "chart-bar" },
     // Placeholder for spacing
     { id: "add", label: "", icon: "plus", isAction: true },
     { id: "journey", label: "Journey", icon: "map-marker-path" },
     { id: "profile", label: "Profile", icon: "account" },
   ];
 
+  const insets = useSafeAreaInsets();
+
   return (
     <View>
-      <AdBanner isDark={isDark} shouldLoad={true} />
-      <View className={`flex-row items-end justify-between px-2 border-t pt-2 ${isDark ? 'border-[#0f0f11] bg-[#0f0f11]' : 'border-gray-200 bg-white'}`}>
+      {/* <AdBanner isDark={isDark} shouldLoad={true} /> */}
+      <View
+        style={{ paddingBottom: Math.max(insets.bottom, 16) }}
+        className={`flex-row items-end justify-between px-2 border-t pt-2 ${isDark ? 'border-[#0f0f11] bg-[#0f0f11]' : 'border-gray-200 bg-white'}`}
+      >
         {tabs.map((tab) => {
           if (tab.isAction) {
             return (

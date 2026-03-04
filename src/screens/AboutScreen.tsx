@@ -12,7 +12,9 @@ export default function AboutScreen({ onBack, isDark }: AboutScreenProps) {
     const insets = useSafeAreaInsets();
 
     return (
-        <View className={`flex-1 ${isDark ? 'bg-[#0f0f11]' : 'bg-gray-50'}`}>
+        <View className={`flex-1 ${isDark ? 'bg-[#0f0f11]' : 'bg-gray-50'}`}
+            style={{ paddingTop: Math.max(insets.top, 0) }}
+        >
             {/* Header */}
             <View className="flex-row items-center px-6 pt-6 pb-4">
                 <TouchableOpacity

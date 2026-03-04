@@ -49,7 +49,9 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
     const canContinue = step === 1 ? name.trim().length > 0 : isValidDate(dob);
 
     return (
-        <View className="flex-1 bg-slate-900">
+        <View className="flex-1 bg-[#0f0f11]"
+            style={{ paddingTop: Math.max(insets.top, 0) }}
+        >
             <ScrollView
                 contentContainerStyle={{ flexGrow: 1 }}
                 keyboardShouldPersistTaps="handled"
@@ -132,7 +134,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                 </View>
 
                 {/* Bottom Button */}
-                <View className="px-6" style={{ paddingBottom: Math.max(insets.bottom, 32) }}>
+                <View className="px-6 mb-6" style={{ paddingBottom: Math.max(insets.bottom, 32) }}>
                     {step === 2 && (
                         <TouchableOpacity
                             onPress={() => setStep(1)}

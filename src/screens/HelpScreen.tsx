@@ -63,14 +63,14 @@ export default function HelpScreen({ onBack, isDark }: HelpScreenProps) {
     ];
 
     return (
-        <View className={`flex-1 ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}>
+        <View className={`flex-1 ${isDark ? 'bg-[#0f0f11]' : 'bg-gray-50'}`}>
             {/* Header */}
             <View className="flex-row items-center px-6 pt-6 pb-4">
                 <TouchableOpacity
                     onPress={onBack}
-                    className={`h-10 w-10 items-center justify-center rounded-full ${isDark ? 'bg-slate-800' : 'bg-white shadow-sm'}`}
+                    className={`h-10 w-10 items-center justify-center rounded-full ${isDark ? 'bg-[#1e1e20]' : 'bg-white shadow-sm'}`}
                 >
-                    <Icon name="arrow-left" size={24} color={isDark ? '#FFF' : '#334155'} />
+                    <Icon name="chevron-left" size={24} color={isDark ? '#FFF' : '#334155'} />
                 </TouchableOpacity>
                 <Text className={`ml-4 text-xl font-bold ${isDark ? 'text-white' : 'text-slate-700'}`}>
                     Help & Support
@@ -89,7 +89,7 @@ export default function HelpScreen({ onBack, isDark }: HelpScreenProps) {
                 {faqs.map((faq) => (
                     <View
                         key={faq.id}
-                        className={`mb-4 rounded-xl overflow-hidden ${isDark ? 'bg-slate-800' : 'bg-white shadow-sm'}`}
+                        className={`mb-4 rounded-xl overflow-hidden ${isDark ? 'bg-[#1e1e20]' : 'bg-white shadow-sm'}`}
                     >
                         <TouchableOpacity
                             onPress={() => toggleExpand(faq.id)}
@@ -97,7 +97,7 @@ export default function HelpScreen({ onBack, isDark }: HelpScreenProps) {
                             activeOpacity={0.7}
                         >
                             <View className="flex-row items-center flex-1 pr-4">
-                                <View className={`h-8 w-8 items-center justify-center rounded-full mr-3 ${isDark ? 'bg-slate-700' : 'bg-primary/10'}`}>
+                                <View className={`h-8 w-8 items-center justify-center rounded-full mr-3 ${isDark ? 'bg-[#1e1e20]' : 'bg-primary/10'}`}>
                                     <Icon name={faq.icon} size={16} color={isDark ? '#8b56fc' : '#8b56fc'} />
                                 </View>
                                 <Text className={`text-base font-semibold ${isDark ? 'text-white' : 'text-slate-700'}`}>
@@ -113,7 +113,7 @@ export default function HelpScreen({ onBack, isDark }: HelpScreenProps) {
 
                         {expandedId === faq.id && (
                             <View className={`px-4 pb-4 pt-0`}>
-                                <View className={`h-[1px] w-full mb-3 ${isDark ? 'bg-slate-700' : 'bg-gray-100'}`} />
+                                <View className={`h-[1px] w-full mb-3 ${isDark ? 'bg-[#1e1e20]' : 'bg-gray-100'}`} />
                                 <Text className={`leading-6 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                                     {faq.answer}
                                 </Text>

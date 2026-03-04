@@ -386,9 +386,9 @@ function JourneyScreen({ habits, habitHistory, theme, isDark, isVisible }: Journ
         <View className="h-24" />
 
       </ScrollView>
-      <View className="pb-6">
+      {/* <View className="pb-6">
         <AdBanner isDark={isDark} shouldLoad={isVisible} />
-      </View>
+      </View> */}
     </View>
   );
 }

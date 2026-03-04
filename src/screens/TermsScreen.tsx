@@ -54,14 +54,14 @@ export default function TermsScreen({ onBack, isDark }: TermsScreenProps) {
     ];
 
     return (
-        <View className={`flex-1 ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}>
+        <View className={`flex-1 ${isDark ? 'bg-[#0f0f11]' : 'bg-gray-50'}`}>
             {/* Header */}
             <View className="flex-row items-center px-6 pt-6 pb-4">
                 <TouchableOpacity
                     onPress={onBack}
-                    className={`h-10 w-10 items-center justify-center rounded-full ${isDark ? 'bg-slate-800' : 'bg-white shadow-sm'}`}
+                    className={`h-10 w-10 items-center justify-center rounded-full ${isDark ? 'bg-[#1e1e20]' : 'bg-white shadow-sm'}`}
                 >
-                    <Icon name="arrow-left" size={24} color={isDark ? '#FFF' : '#334155'} />
+                    <Icon name="chevron-left" size={24} color={isDark ? '#FFF' : '#334155'} />
                 </TouchableOpacity>
                 <Text className={`ml-4 text-xl font-bold ${isDark ? 'text-white' : 'text-slate-700'}`}>
                     Terms and Conditions

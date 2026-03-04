@@ -209,9 +209,9 @@ function ProfileScreen({
           Usually strictly sticky bottom is better for ads. 
           Here we use a generic View to hold it. 
       */}
-      <View className="pb-6">
+      {/* <View className="pb-6">
         <AdBanner isDark={isDark} shouldLoad={isVisible} />
-      </View>
+      </View> */}
     </View >
   );
 }

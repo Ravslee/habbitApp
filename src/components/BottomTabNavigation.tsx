@@ -1,7 +1,7 @@
 import React from "react";
 import { View, TouchableOpacity, Text } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import AdBanner from "./AdBanner";
 
 interface BottomTabNavigationProps {
   activeTab: "home" | "statistics" | "journey" | "profile";
@@ -24,22 +24,22 @@ export default function BottomTabNavigation({
     { id: "journey", label: "Journey", icon: "map-marker-path" },
     { id: "profile", label: "Profile", icon: "account" },
   ];
-  const insets = useSafeAreaInsets();
 
   return (
-    <View style={{ paddingBottom: Math.max(insets.bottom, 16) }} className={`border-t pt-2 ${isDark ? 'border-[#0f0f11] bg-[#0f0f11]' : 'border-gray-200 bg-white'}`}>
-      <View className="flex-row items-end justify-between px-2">
+    <View>
+      <AdBanner isDark={isDark} shouldLoad={true} />
+      <View className={`flex-row items-end justify-between px-2 border-t pt-2 ${isDark ? 'border-[#0f0f11] bg-[#0f0f11]' : 'border-gray-200 bg-white'}`}>
         {tabs.map((tab) => {
           if (tab.isAction) {
             return (
-              <View key="add-button" className="items-center -mt-8" style={{ width: '20%' }}>
+              <View key="add-button" className="items-center py-2" style={{ width: '20%' }}>
                 <TouchableOpacity
                   onPress={onAddHabit}
-                  className="h-16 w-16 bg-[#8b56fc] rounded-full items-center justify-center shadow-lg shadow-purple-500/50 mb-1"
+                  className="h-16 w-16 bg-[#8b56fc] rounded-full items-center justify-center shadow-lg shadow-purple-500/50 "
                 >
-                  <Icon name="plus" size={32} color="#FFFFFF" />
+                  <Icon name="plus" size={24} color="#FFFFFF" />
                 </TouchableOpacity>
-                <Text className="text-xs font-semibold text-gray-500 opacity-0">Create</Text>
+                {/* <Text className="text-xs font-semibold text-gray-500 opacity-0">Create</Text> */}
               </View>
             );
           }

@@ -121,9 +121,9 @@ function HomeScreen({ habits, habitHistory, onToggleHabit, userName, userProfile
 
 
       </ScrollView>
-      <View className="pb-6">
+      {/* <View className="pb-6">
         <AdBanner isDark={isDark} shouldLoad={isVisible} />
-      </View>
+      </View> */}
     </View >
   );
 }

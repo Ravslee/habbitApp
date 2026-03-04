@@ -12,14 +12,14 @@ export default function AboutScreen({ onBack, isDark }: AboutScreenProps) {
     const insets = useSafeAreaInsets();
 
     return (
-        <View className={`flex-1 ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}>
+        <View className={`flex-1 ${isDark ? 'bg-[#0f0f11]' : 'bg-gray-50'}`}>
             {/* Header */}
             <View className="flex-row items-center px-6 pt-6 pb-4">
                 <TouchableOpacity
                     onPress={onBack}
-                    className={`h-10 w-10 items-center justify-center rounded-full ${isDark ? 'bg-slate-800' : 'bg-white shadow-sm'}`}
+                    className={`h-10 w-10 items-center justify-center rounded-full ${isDark ? 'bg-[#1e1e20]' : 'bg-white shadow-sm'}`}
                 >
-                    <Icon name="arrow-left" size={24} color={isDark ? '#FFF' : '#334155'} />
+                    <Icon name="chevron-left" size={24} color={isDark ? '#FFF' : '#334155'} />
                 </TouchableOpacity>
                 <Text className={`ml-4 text-xl font-bold ${isDark ? 'text-white' : 'text-slate-700'}`}>
                     About Habik
@@ -33,7 +33,7 @@ export default function AboutScreen({ onBack, isDark }: AboutScreenProps) {
             >
                 {/* Logo & Version */}
                 <View className="items-center py-8">
-                    <View className="h-24 w-24 items-center justify-center rounded-2xl bg-transparent mb-4 shadow-lg overflow-hidden">
+                    <View className="h-24 w-24 items-center justify-center rounded-full bg-transparent mb-4 shadow-lg overflow-hidden">
                         <Image
                             source={require('../assets/logo.jpg')}
                             style={{ width: '100%', height: '100%' }}
@@ -49,7 +49,7 @@ export default function AboutScreen({ onBack, isDark }: AboutScreenProps) {
                 </View>
 
                 {/* Description */}
-                <View className={`mb-6 rounded-xl p-6 ${isDark ? 'bg-slate-800' : 'bg-white shadow-sm'}`}>
+                <View className={`mb-6 rounded-xl p-6 ${isDark ? 'bg-[#1e1e20]' : 'bg-white shadow-sm'}`}>
                     <Text className={`mb-4 text-lg font-semibold ${isDark ? 'text-white' : 'text-slate-700'}`}>
                         Empowering Your Daily Growth
                     </Text>
@@ -63,7 +63,7 @@ export default function AboutScreen({ onBack, isDark }: AboutScreenProps) {
                 </View>
 
                 {/* Key Values */}
-                <View className={`mb-6 rounded-xl p-6 ${isDark ? 'bg-slate-800' : 'bg-white shadow-sm'}`}>
+                <View className={`mb-6 rounded-xl p-6 ${isDark ? 'bg-[#1e1e20]' : 'bg-white shadow-sm'}`}>
                     <Text className={`mb-4 text-lg font-semibold ${isDark ? 'text-white' : 'text-slate-700'}`}>
                         Our Mission
                     </Text>
@@ -72,11 +72,11 @@ export default function AboutScreen({ onBack, isDark }: AboutScreenProps) {
                     </Text>
                 </View>
 
-                <View className="mt-4 mb-10 items-center">
+                {/* <View className="mt-4 mb-10 items-center">
                     <Text className={`text-sm ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
                         Developed by LightApps Studio
                     </Text>
-                </View>
+                </View> */}
 
             </ScrollView>
         </View>

@@ -5,6 +5,7 @@ import { Habit, HabitHistory } from "../../App";
 import BarChart from "../components/BarChart";
 import AdBanner from "../components/AdBanner";
 import { ThemeMode } from "../context/ThemeContext";
+import { screenPropsAreEqual } from "../utils/memoization";
 
 interface StatisticsScreenProps {
   habits: Habit[];
@@ -16,7 +17,7 @@ interface StatisticsScreenProps {
 
 const { width } = Dimensions.get('window');
 
-export default function StatisticsScreen({ habits, habitHistory, theme, isDark, isVisible }: StatisticsScreenProps) {
+function StatisticsScreen({ habits, habitHistory, theme, isDark, isVisible }: StatisticsScreenProps) {
   // Calculate statistics
   const stats = useMemo(() => {
     const today = new Date();
@@ -192,9 +193,11 @@ export default function StatisticsScreen({ habits, habitHistory, theme, isDark, 
         </Text>
 
       </ScrollView>
-      <View className="pb-6">
-        <AdBanner isDark={isDark} />
-      </View>
+      {/* <View className="pb-6">
+        <AdBanner isDark={isDark} shouldLoad={isVisible} />
+      </View> */}
     </View>
   );
 }
+
+export default React.memo(StatisticsScreen, screenPropsAreEqual);

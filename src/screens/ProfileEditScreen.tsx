@@ -12,6 +12,7 @@ import {
     PermissionsAndroid,
 } from "react-native";
 import { launchImageLibrary, launchCamera, ImagePickerResponse } from "react-native-image-picker";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { UserProfile } from "../../App";
 
@@ -31,6 +32,8 @@ export default function ProfileEditScreen({
     const [name, setName] = useState(userProfile.name);
     const [dob, setDob] = useState(userProfile.dob);
     const [profileImage, setProfileImage] = useState<string | undefined>(userProfile.profileImage);
+
+    const insets = useSafeAreaInsets();
 
     const isValidDate = (dateString: string) => {
         const regex = /^\d{2}\/\d{2}\/\d{4}$/;
@@ -242,7 +245,7 @@ export default function ProfileEditScreen({
                     <View className="flex-1" />
 
                     {/* Save Button */}
-                    <View className="px-6 pb-8">
+                    <View className="px-6" style={{ paddingBottom: Math.max(insets.bottom, 32) }}>
                         <TouchableOpacity
                             onPress={handleSave}
                             disabled={!canSave}

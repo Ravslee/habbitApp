@@ -7,6 +7,7 @@ import {
     ScrollView,
     Platform,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface OnboardingScreenProps {
     onComplete: (profile: { name: string; dob: string }) => void;
@@ -16,6 +17,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
     const [name, setName] = useState("");
     const [dob, setDob] = useState("");
     const [step, setStep] = useState(1);
+    const insets = useSafeAreaInsets();
 
     const handleContinue = () => {
         if (step === 1 && name.trim()) {
@@ -130,7 +132,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                 </View>
 
                 {/* Bottom Button */}
-                <View className="px-6 pb-8">
+                <View className="px-6" style={{ paddingBottom: Math.max(insets.bottom, 32) }}>
                     {step === 2 && (
                         <TouchableOpacity
                             onPress={() => setStep(1)}
@@ -143,7 +145,7 @@ export default function OnboardingScreen({ onComplete }: OnboardingScreenProps) 
                     <TouchableOpacity
                         onPress={handleContinue}
                         disabled={!canContinue}
-                        className={`rounded-xl py-4 ${canContinue ? 'bg-primary' : 'bg-slate-700'
+                        className={`rounded-xl py-4 flex-row justify-center items-center ${canContinue ? 'bg-primary' : 'bg-slate-700'
                             }`}
                     >
                         <Text

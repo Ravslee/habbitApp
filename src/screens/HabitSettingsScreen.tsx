@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Habit, NotificationSettings } from "../../App";
 
 interface HabitSettingsScreenProps {
@@ -97,6 +98,8 @@ export default function HabitSettingsScreen({
         }
         return <Text className="text-3xl">{iconName}</Text>;
     };
+
+    const insets = useSafeAreaInsets();
 
     return (
         <View className={`flex-1 ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}>
@@ -267,7 +270,7 @@ export default function HabitSettingsScreen({
             </ScrollView>
 
             {/* Save Button */}
-            <View className="px-6 pb-8">
+            <View className="px-6" style={{ paddingBottom: Math.max(insets.bottom, 32) }}>
                 <TouchableOpacity
                     onPress={handleSave}
                     className="rounded-lg bg-primary py-4"

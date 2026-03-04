@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface AboutScreenProps {
     onBack: () => void;
@@ -8,6 +9,8 @@ interface AboutScreenProps {
 }
 
 export default function AboutScreen({ onBack, isDark }: AboutScreenProps) {
+    const insets = useSafeAreaInsets();
+
     return (
         <View className={`flex-1 ${isDark ? 'bg-slate-900' : 'bg-gray-50'}`}>
             {/* Header */}
@@ -23,7 +26,11 @@ export default function AboutScreen({ onBack, isDark }: AboutScreenProps) {
                 </Text>
             </View>
 
-            <ScrollView showsVerticalScrollIndicator={false} className="flex-1 px-6">
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                className="flex-1 px-6"
+                contentContainerStyle={{ paddingBottom: Math.max(insets.bottom, 24) }}
+            >
                 {/* Logo & Version */}
                 <View className="items-center py-8">
                     <View className="h-24 w-24 items-center justify-center rounded-2xl bg-transparent mb-4 shadow-lg overflow-hidden">
@@ -64,7 +71,6 @@ export default function AboutScreen({ onBack, isDark }: AboutScreenProps) {
                         To provide a simple, beautiful, and distraction-free environment for personal development. We prioritize user privacy and data security, ensuring that your journey remains yours alone.
                     </Text>
                 </View>
-
 
                 <View className="mt-4 mb-10 items-center">
                     <Text className={`text-sm ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>

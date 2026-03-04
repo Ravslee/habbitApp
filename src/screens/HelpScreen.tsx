@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface HelpScreenProps {
     onBack: () => void;
@@ -16,6 +17,7 @@ interface FAQItem {
 
 export default function HelpScreen({ onBack, isDark }: HelpScreenProps) {
     const [expandedId, setExpandedId] = useState<string | null>(null);
+    const insets = useSafeAreaInsets();
 
     const toggleExpand = (id: string) => {
         setExpandedId(expandedId === id ? null : id);
@@ -75,7 +77,11 @@ export default function HelpScreen({ onBack, isDark }: HelpScreenProps) {
                 </Text>
             </View>
 
-            <ScrollView showsVerticalScrollIndicator={false} className="flex-1 px-6">
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                className="flex-1 px-6"
+                contentContainerStyle={{ paddingBottom: Math.max(insets.bottom, 24) }}
+            >
                 <Text className={`mb-6 text-base ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                     Everything you need to know about using Habik.
                 </Text>

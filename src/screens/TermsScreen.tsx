@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, ScrollView, TouchableOpacity, Linking } from "react-native";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface TermsScreenProps {
     onBack: () => void;
@@ -8,6 +9,7 @@ interface TermsScreenProps {
 }
 
 export default function TermsScreen({ onBack, isDark }: TermsScreenProps) {
+    const insets = useSafeAreaInsets();
     const sections = [
         {
             title: "1. Acceptance of Terms",
@@ -69,7 +71,7 @@ export default function TermsScreen({ onBack, isDark }: TermsScreenProps) {
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 className="flex-1 px-6"
-                contentContainerStyle={{ paddingBottom: 40 }}
+                contentContainerStyle={{ paddingBottom: Math.max(insets.bottom, 40) }}
             >
                 {/* Last Updated */}
                 <Text className={`mb-6 text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>

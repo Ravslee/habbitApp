@@ -27,7 +27,7 @@ export default function BottomTabNavigation({
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={{ paddingBottom: insets.bottom }} className={`border-t pb-2 pt-2 ${isDark ? 'border-[#0f0f11] bg-[#0f0f11]' : 'border-gray-200 bg-white'}`}>
+    <View style={{ paddingBottom: Math.max(insets.bottom, 16) }} className={`border-t pt-2 ${isDark ? 'border-[#0f0f11] bg-[#0f0f11]' : 'border-gray-200 bg-white'}`}>
       <View className="flex-row items-end justify-between px-2">
         {tabs.map((tab) => {
           if (tab.isAction) {

@@ -397,75 +397,91 @@ export default function App() {
 
   // Show Onboarding if user hasn't completed it (null profile OR empty name)
   if (!userProfile || !userProfile.name) {
-    return <OnboardingScreen onComplete={handleOnboardingComplete} />;
+    return (
+      <SafeAreaProvider>
+        <OnboardingScreen onComplete={handleOnboardingComplete} />
+      </SafeAreaProvider>
+    );
   }
 
   // Show HabitSettings screen
   if (editingHabit) {
     return (
-      <HabitSettingsScreen
-        habit={editingHabit}
-        onSave={(settings) => updateHabitNotification(editingHabit.id, settings)}
-        onBack={handleBackFromHabitSettings}
-        isDark={isDark}
-      />
+      <SafeAreaProvider>
+        <HabitSettingsScreen
+          habit={editingHabit}
+          onSave={(settings) => updateHabitNotification(editingHabit.id, settings)}
+          onBack={handleBackFromHabitSettings}
+          isDark={isDark}
+        />
+      </SafeAreaProvider>
     );
   }
 
   // Show ProfileEdit screen
   if (editingProfile) {
     return (
-      <ProfileEditScreen
-        userProfile={userProfile}
-        onSave={updateProfile}
-        onBack={handleBackFromEditProfile}
-        isDark={isDark}
-      />
+      <SafeAreaProvider>
+        <ProfileEditScreen
+          userProfile={userProfile}
+          onSave={updateProfile}
+          onBack={handleBackFromEditProfile}
+          isDark={isDark}
+        />
+      </SafeAreaProvider>
     );
   }
 
   // Show Terms screen
   if (showTerms) {
     return (
-      <TermsScreen
-        onBack={handleBackFromTerms}
-        isDark={isDark}
-      />
+      <SafeAreaProvider>
+        <TermsScreen
+          onBack={handleBackFromTerms}
+          isDark={isDark}
+        />
+      </SafeAreaProvider>
     );
   }
 
   // Show About screen
   if (showAbout) {
     return (
-      <AboutScreen
-        onBack={handleBackFromAbout}
-        isDark={isDark}
-      />
+      <SafeAreaProvider>
+        <AboutScreen
+          onBack={handleBackFromAbout}
+          isDark={isDark}
+        />
+      </SafeAreaProvider>
     );
   }
 
   // Show Help screen
   if (showHelp) {
     return (
-      <HelpScreen
-        onBack={handleBackFromHelp}
-        isDark={isDark}
-      />
+      <SafeAreaProvider>
+        <HelpScreen
+          onBack={handleBackFromHelp}
+          isDark={isDark}
+        />
+      </SafeAreaProvider>
     );
   }
 
   // Show ManageHabits screen
   if (showManageHabits) {
     return (
-      <ManageHabitsScreen
-        habits={habits}
-        onAddHabit={addHabit}
-        onUpdateHabit={updateHabit}
-        onDeleteHabit={handleDeleteHabit}
-        onEditHabit={handleEditHabit}
-        onBack={handleBackFromManageHabits}
-        isDark={isDark}
-      />
+      <SafeAreaProvider>
+        <ManageHabitsScreen
+          habits={habits}
+          onAddHabit={addHabit}
+          onUpdateHabit={updateHabit}
+          onDeleteHabit={handleDeleteHabit}
+          onEditHabit={handleEditHabit}
+          onBack={handleBackFromManageHabits}
+          isDark={isDark}
+        />
+      </SafeAreaProvider>
     );
   }
 

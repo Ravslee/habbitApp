@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import CreateHabitModal from "../components/CreateHabitModal";
 import AdBanner from "../components/AdBanner";
 import { Habit } from "../../App";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface ManageHabitsScreenProps {
     habits: Habit[];
@@ -36,6 +37,8 @@ export default function ManageHabitsScreen({ habits, onAddHabit, onUpdateHabit, 
     const [selectedHabit, setSelectedHabit] = useState<Habit | undefined>(undefined);
     const [isPredefinedEdit, setIsPredefinedEdit] = useState(false);
     // const [focusedHabitName, setFocusedHabitName] = useState<string | null>(null);
+
+    const insets = useSafeAreaInsets();
 
     const templates = [
         { name: "Reading", icon: "book-open-variant", desc: "Develop a daily reading habit", color: "#fff", bg: "bg-primary/20" },
@@ -226,7 +229,7 @@ export default function ManageHabitsScreen({ habits, onAddHabit, onUpdateHabit, 
                 {/* Bottom spacing */}
                 <View className="h-6" />
 
-                <View className="pb-6">
+                <View style={{ paddingBottom: Math.max(insets.bottom, 24) }}>
                     <AdBanner isDark={isDark} />
                 </View>
             </ScrollView>
